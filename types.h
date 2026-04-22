@@ -22,6 +22,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
+
+#include <stddef.h>
+
+
+#define	NULL		((void *)0)
+#define UINT_MAX	((unsigned int)0xffffffff)
+#define ALIGNED(x)	__attribute__((aligned(x)))
+#define MEM2_BSS	__attribute__((section (".bss.mem2")))
+
+
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -41,10 +51,6 @@ typedef volatile signed char vs8;
 typedef volatile signed short vs16;
 typedef volatile signed int vs32;
 typedef volatile signed long long vs64;
-
-typedef s32 size_t;
-
-#define	NULL	((void *)0)
 
 #endif
 

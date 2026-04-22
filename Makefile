@@ -1,6 +1,6 @@
 include starlet.mk
 
-CFLAGS = -fpic -mbig-endian -mthumb -march=armv5t -mthumb-interwork -fomit-frame-pointer -Os
+CFLAGS = -Wall -Wextra -fpic -mbig-endian -mthumb -march=armv5te -mthumb-interwork -fomit-frame-pointer -Os
 LDFLAGS += -fpic -mbig-endian -mthumb -march=armv5t -mthumb-interwork -fomit-frame-pointer
 LDSCRIPT = babelfish.ld
 LIBS = -lgcc
@@ -8,7 +8,7 @@ LIBS = -lgcc
 TARGET = babelfish.elf
 TARGET_BIN = babelfish.bin
 DATA = vectors.bin.o
-OBJS = start.o babelfish.o utils.o gecko.o memory.o memory_asm.o $(DATA)
+OBJS = start.o babelfish.o utils.o ff.o diskio.o sdhc.o string.o gecko.o memory.o memory_asm.o sdmmc.o $(DATA)
 
 include common.mk
 
@@ -33,8 +33,12 @@ vectors.o: vectors.s
 $(TARGET_BIN): $(TARGET)
 	@echo  "  OBJCPY    $@"
 	@$(OBJCOPY) -O binary $< $@
+	@echo  "  ARMBOOT   armboot.bin"
+	@./create_armboot_bin.sh && ./create_armboot_bin
+	@-rm -f babelfish.bin vectors.bin
 
 clean: myclean
 
 myclean:
-	-rm -f $(TARGET_BIN) vectors.elf vectors.bin vectors_bin.h vectors.o babelfish.map
+	-rm -f $(TARGET_BIN) vectors.elf vectors.bin vectors_bin.h vectors.o babelfish.map armboot.bin create_armboot_bin
+

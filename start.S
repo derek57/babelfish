@@ -21,6 +21,7 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 .globl debug_output
 .globl dc_flush
 .globl irq_kill
+.globl irq_restore
 .globl disable_icache_dcache_mmu
 .globl jump_to_r0
 .section .init
@@ -35,7 +36,8 @@ _start:
 
 @ here's part of the magic:	
 	@ XXX calculate size of code+data  -- or just hardcode it :/
-	mov r5, #0x4000
+@	mov r5, #0x4000
+	ldr r5, =__loader_size
 
 	@ Output 0x42 to the debug port
 	mov	r0, #0x42
@@ -152,6 +154,13 @@ irq_kill:
 	mrs		r1, cpsr
 	and		r0, r1, #0xc0
 	orr		r1, r1, #0xc0
+	msr		cpsr_c, r1
+	bx		lr
+
+irq_restore:
+	mrs		r1, cpsr
+	bic		r1, r1, #0xc0
+	orr		r1, r1, r0
 	msr		cpsr_c, r1
 	bx		lr
 

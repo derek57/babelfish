@@ -34,9 +34,17 @@ swi_vector:
 
 loop:
 	ldrb r2, [r1]
+
+	@ NOTE: do not send the terminating NUL byte; some terminals render it as <break>
+	cmp r2, #0x00
+	beq return
+
 	bl send
 	add r1, #1
-	cmp r2, #0x00
+
+	@ NOTE: do not send the terminating NUL byte; some terminals render it as <break>
+	@cmp r2, #0x00
+
 	bne loop
 	
 @ optional code to insert linefeed at the end of each print, some IOS modules seem to need this

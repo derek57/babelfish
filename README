@@ -1,4 +1,4 @@
-This is babelfish, a just-in-time self-propagting IOS patcher for the Nintendo Wii.
+This is babelfish (EXTENDED-VERSION), a just-in-time self-propagting IOS patcher for the Nintendo Wii.
 
 Background:
 
@@ -94,3 +94,5 @@ way that "vanilla" IOS doesn't undestand, which will cause IOS to
 break if Babelfish fails to load.  Just be extra careful when touching
 any code that deals with NAND unless you have BootMii/boot2 installed
 with a recent NAND flash backup.bin.
+
+THANK YOU VERY MUCH, BUSHING...

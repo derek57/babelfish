@@ -92,10 +92,19 @@ SECTIONS
 		*(.bss*)
 		*(.sbss*)
 		*(COMMON)
-		. = ALIGN(32);
+		. = ALIGN(4);
 		__bss_end = . ;
 	}
 
+	/* Stuff below: For "safety"... */
+	__exidx_start = . ;
+
+	.ARM.exidx :
+	{
+		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
+	}
+
+	__exidx_end = .;
 }
 
 /* make sure you leave enough room for the stack -- I had major problems
