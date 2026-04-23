@@ -250,6 +250,7 @@ void dc_invalidaterange(void *start, u32 size)
 //	irq_restore(cookie);
 }
 
+#if 0
 void dc_flushall(void)
 {
 	/*u32 cookie =*/ irq_kill();
@@ -268,4 +269,5 @@ void ic_invalidateall(void)
 	ahb_flush_to(AHB_STARLET);
 //	irq_restore(cookie);
 }
+#endif
 

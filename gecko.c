@@ -134,8 +134,10 @@ int gecko_puts(const char *s)
 	return bytes_written;
 }
 
+/*
 int putchar(int c)
 {
 	return gecko_putc(c);
 }
+*/
 

@@ -186,16 +186,18 @@ err:
 	return (error);
 }
 
-#ifndef LOADER
 /*
- * Shutdown hook established by or called from attachment driver.
- */
+#ifndef LOADER
+//
+// Shutdown hook established by or called from attachment driver.
+//
 void sdhc_shutdown(void)
 {
-	/* XXX chip locks up if we don't disable it before reboot. */
+	// XXX chip locks up if we don't disable it before reboot.
 	(void)sdhc_host_reset(&sc_host);
 }
 #endif
+*/
 
 /* Prepare for another command. */
 int sdhc_soft_reset(struct sdhc_host *hp, int mask)
@@ -282,28 +284,28 @@ int sdhc_bus_power(struct sdhc_host *hp, u_int32_t ocr)
 {
 	DPRINTF(0, "sdhc_bus_power(%u)\n", ocr);
 
-	/* Disable bus power before voltage change. */
+	// Disable bus power before voltage change.
 	HWRITE1(hp, SDHC_POWER_CTL, 0);
 
-	/* If power is disabled, reset the host and return now. */
+	// If power is disabled, reset the host and return now.
 	if (ocr == 0)
 	{
 		(void)sdhc_host_reset(hp);
 		return 0;
 	}
 
-	/*
-	 * Enable bus power.  Wait at least 1 ms (or 74 clocks) plus
-	 * voltage ramp until power rises.
-	 */
+	//
+	// Enable bus power.  Wait at least 1 ms (or 74 clocks) plus
+	// voltage ramp until power rises.
+	//
 	HWRITE1(hp, SDHC_POWER_CTL, (SDHC_VOLTAGE_3_3V << SDHC_VOLTAGE_SHIFT) | SDHC_BUS_POWER);
 	delay(10000);
 
-	/*
-	 * The host system may not power the bus due to battery low,
-	 * etc.  In that case, the host controller should clear the
-	 * bus power bit.
-	 */
+	//
+	// The host system may not power the bus due to battery low,
+	// etc.  In that case, the host controller should clear the
+	// bus power bit.
+	//
 	if (!ISSET(HREAD1(hp, SDHC_POWER_CTL), SDHC_BUS_POWER))
 	{
 		DPRINTF(0, "Host controller failed to enable bus power\n");
@@ -313,10 +315,10 @@ int sdhc_bus_power(struct sdhc_host *hp, u_int32_t ocr)
 	return 0;
 }
 
-/*
- * Return the smallest possible base clock frequency divisor value
- * for the CLOCK_CTL register to produce `freq' (KHz).
- */
+//
+// Return the smallest possible base clock frequency divisor value
+// for the CLOCK_CTL register to produce `freq' (KHz).
+//
 static int sdhc_clock_divisor(struct sdhc_host *hp, u_int freq)
 {
 	int div;
@@ -327,14 +329,14 @@ static int sdhc_clock_divisor(struct sdhc_host *hp, u_int freq)
 			return (div / 2);
 	}
 
-	/* No divisor found. */
+	// No divisor found.
 	return -1;
 }
 
-/*
- * Set or change SDCLK frequency or disable the SD clock.
- * Return zero on success.
- */
+//
+// Set or change SDCLK frequency or disable the SD clock.
+// Return zero on success.
+//
 int sdhc_bus_clock(struct sdhc_host *hp, int freq)
 {
 	int div;
@@ -343,27 +345,27 @@ int sdhc_bus_clock(struct sdhc_host *hp, int freq)
 	DPRINTF(0, "%s(%d)\n", __FUNCTION__, freq);
 
 #ifdef DIAGNOSTIC
-	/* Must not stop the clock if commands are in progress. */
+	// Must not stop the clock if commands are in progress.
 	if (ISSET(HREAD4(hp, SDHC_PRESENT_STATE), SDHC_CMD_INHIBIT_MASK) && sdhc_card_detect(hp))
 		DPRINTF(0, "sdhc_sdclk_frequency_select: command in progress\n");
 #endif
 
-	/* Stop SD clock before changing the frequency. */
+	// Stop SD clock before changing the frequency.
 	HWRITE2(hp, SDHC_CLOCK_CTL, 0);
 
 	if (freq == SDMMC_SDCLK_OFF)
 		return 0;
 
-	/* Set the minimum base clock frequency divisor. */
+	// Set the minimum base clock frequency divisor.
 	if ((div = sdhc_clock_divisor(hp, freq)) < 0)
 	{
-		/* Invalid base clock frequency or `freq' value. */
+		// Invalid base clock frequency or `freq' value.
 		return EINVAL;
 	}
 
 	HWRITE2(hp, SDHC_CLOCK_CTL, div << SDHC_SDCLK_DIV_SHIFT);
 
-	/* Start internal clock.  Wait 10ms for stabilization. */
+	// Start internal clock.  Wait 10ms for stabilization.
 	HSET2(hp, SDHC_CLOCK_CTL, SDHC_INTCLK_ENABLE);
 
 	for (timo = 1000; timo > 0; timo--)
@@ -380,12 +382,13 @@ int sdhc_bus_clock(struct sdhc_host *hp, int freq)
 		return ETIMEDOUT;
 	}
 
-	/* Enable SD clock. */
+	// Enable SD clock.
 	HSET2(hp, SDHC_CLOCK_CTL, SDHC_SDCLK_ENABLE);
 
 	return 0;
 }
 
+/*
 void sdhc_card_intr_mask(struct sdhc_host *hp, int enable)
 {
 	if (enable)
@@ -404,6 +407,7 @@ void sdhc_card_intr_ack(struct sdhc_host *hp)
 {
 	HSET2(hp, SDHC_NINTR_STATUS_EN, SDHC_CARD_INTERRUPT);
 }
+*/
 
 int sdhc_wait_state(struct sdhc_host *hp, u_int32_t mask, u_int32_t value)
 {
@@ -470,7 +474,7 @@ int sdhc_wait_intr(struct sdhc_host *hp, int mask, int timo)
 	DPRINTF(2, "sdhc: timo=%d status=%#x intr status=%#x error %#x\n", 
 		timo, status, hp->intr_status, hp->intr_error_status);
 
-	/* Command timeout has higher priority than command complete. */
+	// Command timeout has higher priority than command complete.
 	if (ISSET(status, SDHC_ERROR_INTERRUPT))
 	{
 		DPRINTF(0, "resetting due to error interrupt\n");
@@ -480,7 +484,7 @@ int sdhc_wait_intr(struct sdhc_host *hp, int mask, int timo)
 		status = 0;
 	}
 
-	/* Command timeout has higher priority than command complete. */
+	// Command timeout has higher priority than command complete.
 	if (ISSET(status, SDHC_ERROR_TIMEOUT))
 	{
 		DPRINTF(0, "not resetting due to timeout\n");
@@ -539,7 +543,7 @@ void sdhc_transfer_data(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	}
 
 #if SDHC_DEBUG
-	/* XXX I forgot why I wanted to know when this happens :-( */
+	// XXX I forgot why I wanted to know when this happens :-(
 	if (((cmd->c_opcode == 52) || (cmd->c_opcode == 53)) && ISSET(MMC_R1(cmd->c_resp), 0xcb00))
 		DPRINTF(0, "sdhc: CMD52/53 error response flags %#x\n", MMC_R1(cmd->c_resp) & 0xff00);
 #endif
@@ -567,12 +571,12 @@ int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	DPRINTF(1, "sdhc: start cmd %u arg=%#x data=%p dlen=%d flags=%#x\n", 
 		cmd->c_opcode, cmd->c_arg, cmd->c_data, cmd->c_datalen, cmd->c_flags);
 
-	/*
-	 * The maximum block length for commands should be the minimum
-	 * of the host buffer size and the card buffer size. (1.7.2)
-	 */
+	//
+	// The maximum block length for commands should be the minimum
+	// of the host buffer size and the card buffer size. (1.7.2)
+	//
 
-	/* Fragment the data into proper blocks. */
+	// Fragment the data into proper blocks.
 	if (cmd->c_datalen > 0)
 	{
 		blksize = MIN(cmd->c_datalen, cmd->c_blklen);
@@ -580,20 +584,20 @@ int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 
 		if ((cmd->c_datalen % blksize) > 0)
 		{
-			/* XXX: Split this command. (1.7.4) */
+			// XXX: Split this command. (1.7.4)
 			DPRINTF(0, "sdhc: data not a multiple of %d bytes\n", blksize);
 			return EINVAL;
 		}
 	}
 
-	/* Check limit imposed by 9-bit block count. (1.7.2) */
+	// Check limit imposed by 9-bit block count. (1.7.2)
 	if (blkcount > SDHC_BLOCK_COUNT_MAX)
 	{
 		DPRINTF(0, "sdhc: too much data\n");
 		return EINVAL;
 	}
 
-	/* Prepare transfer mode register value. (2.2.5) */
+	// Prepare transfer mode register value. (2.2.5)
 	mode = 0;
 
 	if (ISSET(cmd->c_flags, SCF_CMD_READ))
@@ -607,7 +611,7 @@ int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 //		{
 			mode |= SDHC_MULTI_BLOCK_MODE;
 
-			/* XXX only for memory commands? */
+			// XXX only for memory commands?
 			mode |= SDHC_AUTO_CMD12_ENABLE;
 //		}
 	}
@@ -615,9 +619,9 @@ int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	if (ISSET(hp->flags, SHF_USE_DMA))
 		mode |= SDHC_DMA_ENABLE;
 
-	/*
-	 * Prepare command register value. (2.2.6)
-	 */
+	//
+	// Prepare command register value. (2.2.6)
+	//
 	command = (cmd->c_opcode & SDHC_COMMAND_INDEX_MASK) << SDHC_COMMAND_INDEX_SHIFT;
 
 	if (ISSET(cmd->c_flags, SCF_RSP_CRC))
@@ -638,7 +642,7 @@ int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	else
 		command |= SDHC_RESP_LEN_48;
 
-	/* Wait until command and data inhibit bits are clear. (1.5) */
+	// Wait until command and data inhibit bits are clear. (1.5)
 	if ((error = sdhc_wait_state(hp, SDHC_CMD_INHIBIT_MASK, 0)) != 0)
 		return error;
 
@@ -662,10 +666,10 @@ int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 
 	DPRINTF(1, "sdhc: cmd=%#x mode=%#x blksize=%d blkcount=%d\n", command, mode, blksize, blkcount);
 
-	/*
-	 * Start a CPU data transfer.  Writing to the high order byte
-	 * of the SDHC_COMMAND register triggers the SD command. (1.5)
-	 */
+	//
+	// Start a CPU data transfer.  Writing to the high order byte
+	// of the SDHC_COMMAND register triggers the SD command. (1.5)
+	//
 	HWRITE2(hp, SDHC_BLOCK_SIZE, blksize | (7 << 12));
 
 	if (blkcount > 0)
@@ -697,9 +701,9 @@ void sdhc_exec_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 
 	hp->intr_status = 0;
 
-	/*
-	 * Start the MMC command, or mark `cmd' as failed and return.
-	 */
+	//
+	// Start the MMC command, or mark `cmd' as failed and return.
+	//
 	error = sdhc_start_command(hp, cmd);
 
 	if (error != 0)
@@ -710,10 +714,10 @@ void sdhc_exec_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 		return;
 	}
 
-	/*
-	 * Wait until the command phase is done, or until the command
-	 * is marked done for any other reason.
-	 */
+	//
+	// Wait until the command phase is done, or until the command
+	// is marked done for any other reason.
+	//
 	status = sdhc_wait_intr(hp, SDHC_COMMAND_COMPLETE, cmd->c_timeout);
 
 	if (!ISSET(status, SDHC_COMMAND_COMPLETE))
@@ -728,11 +732,11 @@ void sdhc_exec_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 
 //	DPRINTF(0, "command_complete, continuing...\n");
 
-	/*
-	 * The host controller removes bits [0:7] from the response
-	 * data (CRC) and we pass the data up unchanged to the bus
-	 * driver (without padding).
-	 */
+	//
+	// The host controller removes bits [0:7] from the response
+	// data (CRC) and we pass the data up unchanged to the bus
+	// driver (without padding).
+	//
 	if ((cmd->c_error == 0) && ISSET(cmd->c_flags, SCF_RSP_PRESENT))
 	{
 		if (ISSET(cmd->c_flags, SCF_RSP_136))
@@ -747,10 +751,10 @@ void sdhc_exec_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 			cmd->c_resp[0] = HREAD4(hp, SDHC_RESPONSE);
 	}
 
-	/*
-	 * If the command has data to transfer in any direction,
-	 * execute the transfer now.
-	 */
+	//
+	// If the command has data to transfer in any direction,
+	// execute the transfer now.
+	//
 	if ((cmd->c_error == 0) && (cmd->c_datalen > 0))
 		sdhc_transfer_data(hp, cmd);
 
@@ -761,9 +765,9 @@ void sdhc_exec_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	hp->data_command = 0;
 }
 
-/*
- * Established by attachment driver at interrupt priority IPL_SDMMC.
- */
+//
+// Established by attachment driver at interrupt priority IPL_SDMMC.
+//
 int sdhc_intr(void)
 {
 	u_int16_t status;
@@ -771,7 +775,7 @@ int sdhc_intr(void)
 	DPRINTF(1, "shdc_intr():\n");
 //	sdhc_dump_regs(&sc_host);
 		
-	/* Find out which interrupts are pending. */
+	// Find out which interrupts are pending.
 	status = HREAD2(&sc_host, SDHC_NINTR_STATUS);
 
 	if (!ISSET(status, SDHC_NINTR_STATUS_MASK))
@@ -780,17 +784,17 @@ int sdhc_intr(void)
 		return 0;
 	}
 
-	/* Acknowledge the interrupts we are about to handle. */
+	// Acknowledge the interrupts we are about to handle.
 	HWRITE2(&sc_host, SDHC_NINTR_STATUS, status);
 	DPRINTF(2, "sdhc: interrupt status=%d\n", status);
 
-	/* Service error interrupts. */
+	// Service error interrupts.
 	if (ISSET(status, SDHC_ERROR_INTERRUPT))
 	{
 		u_int16_t error;
 		u_int16_t signal;
 
-		/* Acknowledge error interrupts. */
+		// Acknowledge error interrupts.
 		error = HREAD2(&sc_host, SDHC_EINTR_STATUS);
 		signal = HREAD2(&sc_host, SDHC_EINTR_SIGNAL_EN);
 		HWRITE2(&sc_host, SDHC_EINTR_SIGNAL_EN, 0);
@@ -817,17 +821,17 @@ int sdhc_intr(void)
 		}
 	}
 
-	/*
-	 * Wake up the blocking process to service command
-	 * related interrupt(s).
-	 */
+	//
+	// Wake up the blocking process to service command
+	// related interrupt(s).
+	//
 	if (ISSET(status, SDHC_BUFFER_READ_READY | SDHC_BUFFER_WRITE_READY | SDHC_COMMAND_COMPLETE |
 	    SDHC_TRANSFER_COMPLETE | SDHC_DMA_INTERRUPT))
 	{
 		sc_host.intr_status |= status;
 	}
 
-	/* Service SD card interrupts. */
+	// Service SD card interrupts.
 	if  (ISSET(status, SDHC_CARD_INTERRUPT))
 	{
 		DPRINTF(0, "sdhc: card interrupt\n");
@@ -847,8 +851,10 @@ void sdhc_init(void)
 	sdhc_host_found(0, SDHC_REG_BASE, 1);
 }
 
+/*
 void sdhc_exit(void)
 {
        sdhc_shutdown();
 }
+*/
 

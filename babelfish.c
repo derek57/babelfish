@@ -284,6 +284,7 @@ u32 babelfish_starlet_syscall_handler_orig = 0;
 
 extern void babelfish_starlet_syscall_shim(void);
 
+/*
 static inline __attribute__((always_inline)) u32 bf_get_lr(void)
 {
 	u32 lr;
@@ -292,6 +293,7 @@ static inline __attribute__((always_inline)) u32 bf_get_lr(void)
 
 	return lr;
 }
+*/
 
 static inline __attribute__((always_inline)) u32 norm_pc(u32 pc)
 {
@@ -2557,7 +2559,7 @@ s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
 // perform patching of syscall table to install our hooks
 void handle_syscall_table(u32 *syscall_table, u32 size)
 {
-	u32 cookie;
+	//u32 cookie;
 #if 0
 	u32 i;
 	u32 num_syscalls;
@@ -2575,7 +2577,7 @@ void handle_syscall_table(u32 *syscall_table, u32 size)
 #else
 	(void)size;
 #endif
-	cookie = irq_kill();
+	/*cookie =*/ irq_kill();
 
 	// We assume a specifc syscall ordering here, oops.   grab the existing function pointers
 	ios_createthread = (void *)syscall_table[SYSCALL_CREATE_THREAD];

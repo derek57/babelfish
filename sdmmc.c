@@ -61,6 +61,7 @@ void sdmmc_attach(sdmmc_chipset_handle_t handle)
 	}
 }
 
+/*
 void sdmmc_abort(void)
 {
 	struct sdmmc_command cmd;
@@ -72,6 +73,7 @@ void sdmmc_abort(void)
 	cmd.c_flags = SCF_RSP_R1B;
 	sdhc_exec_command(card.handle, &cmd);
 }
+*/
 
 void sdmmc_needs_discover(void)
 {
@@ -410,6 +412,7 @@ int sdmmc_read(u32 blk_start, u32 blk_count, void *data)
 	return 0;
 }
 
+/*
 #ifndef LOADER
 int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
 {
@@ -481,4 +484,5 @@ int sdmmc_get_sectors(void)
 	return card.num_sectors;
 }
 #endif
+*/
 

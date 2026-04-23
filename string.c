@@ -13,6 +13,7 @@ https://negix.net/trac/pdclib
 #include "string.h"
 
 
+/*
 size_t strlen(const char *s)
 {
 	size_t len;
@@ -32,6 +33,7 @@ size_t strnlen(const char *s, size_t count)
 
 	return len;
 }
+*/
 
 void *memset(void *b, int c, size_t len)
 {
@@ -68,7 +70,6 @@ int memcmp(const void *s1, const void *s2, size_t len)
 
 	return 0;
 }
-*/
 
 int strcmp(const char *s1, const char *s2)
 {
@@ -198,4 +199,5 @@ char *strncpy(char *dst, const char *src, size_t n)
 
 	return ret;
 }
+*/
 
