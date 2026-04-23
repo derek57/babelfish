@@ -110,7 +110,7 @@ s32 printf (const char* str, ...)
 	char s[16];
 	s32 i;
 	s32 w;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 
 	va_start(arp, str);
 

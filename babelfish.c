@@ -594,7 +594,7 @@ static void print_ctx_tag(int ctx)
 
 void replace_ios_loader(u32 *buffer)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	u32 *me = (u32 *)MEMHOLE_ADDR;
 
 	dprintf("new hdr length = %x\n", buffer[0]);
@@ -664,7 +664,7 @@ void replace_ios_loader(u32 *buffer)
 #if USE_RELOAD_IOS
 void reload_ios_wrapper(u32 *buffer, u32 version)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 
 	dprintf("reload_ios(%x, %x)\n", (u32)buffer, version);
 
@@ -918,7 +918,7 @@ u32 *find_reload_ios(void)
 	// these numbers are pretty much guaranteed to exist -- see above implementation of reload_ios
 	u32 magic[] = { 0x93400000, 0x93420000 };
 	u32 *kernel = (u32 *)0xFFFF0000;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 
 	dprintf("Looking for reload_ios\n");
 
@@ -989,7 +989,7 @@ void do_kernel_patches(u32 size)
 	u32 *kernel_mem32 = (u32 *)0xFFFF0000;
 	u16 *kernel_mem16 = (u16 *)0xFFFF0000;
 
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 #if 0
 	dprintf("do_kernel_patches(%x)\n", size);
 #else
@@ -1108,7 +1108,7 @@ void do_kernel_patches(u32 size)
 void do_kd_patch(u8 *buffer, u32 size)
 {
 	u32 i;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 
 	// I don't remember what this first patch was, sorry
 	// u8 match[] = { 0x13, 0xdf, 0x5f, 0xcd, 0x13, 0xdf, 0x5f, 0xa9 };
@@ -1536,7 +1536,7 @@ ios_launchos_func ios_launchos = NULL;
 s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32 prio, u32 attr)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 
 	// gross hack -- on later modular IOSes, we can't patch KD when it's loaded
 	// because only the kernel gets loaded by our ELF loader/patcher -- so instead,
@@ -1556,7 +1556,7 @@ s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32
 s32 IOS_JoinThread(u32 id, void **arg)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_jointhread(id, arg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1567,7 +1567,7 @@ s32 IOS_JoinThread(u32 id, void **arg)
 s32 IOS_DestroyThread(u32 id, void *arg)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_destroythread(id, arg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1578,7 +1578,7 @@ s32 IOS_DestroyThread(u32 id, void *arg)
 s32 IOS_GetThreadId(void)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getthreadid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1589,7 +1589,7 @@ s32 IOS_GetThreadId(void)
 s32 IOS_GetProcessId(void)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getprocessid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1600,7 +1600,7 @@ s32 IOS_GetProcessId(void)
 s32 IOS_StartThread(s32 id)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_startthread(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1611,7 +1611,7 @@ s32 IOS_StartThread(s32 id)
 s32 IOS_StopThread(s32 id)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_stopthread(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1621,7 +1621,7 @@ s32 IOS_StopThread(s32 id)
 
 void IOS_YieldThread(void)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_yieldthread();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1631,7 +1631,7 @@ void IOS_YieldThread(void)
 s32 IOS_GetThreadPriority(s32 id)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getthreadprio(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1642,7 +1642,7 @@ s32 IOS_GetThreadPriority(s32 id)
 s32 IOS_SetThreadPriority(s32 id, u32 prio)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setthreadprio(id, prio);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1653,7 +1653,7 @@ s32 IOS_SetThreadPriority(s32 id, u32 prio)
 s32 IOS_CreateMessageQueue(s32 *msg, u32 size)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_createmessagequeue(msg, size);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1664,7 +1664,7 @@ s32 IOS_CreateMessageQueue(s32 *msg, u32 size)
 s32 IOS_DestroyMessageQueue(s32 id)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_destroymessagequeue(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1675,7 +1675,7 @@ s32 IOS_DestroyMessageQueue(s32 id)
 s32 IOS_SendMessage(s32 id, s32 msg, u32 flag)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_sendmessage(id, msg, flag);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1686,7 +1686,7 @@ s32 IOS_SendMessage(s32 id, s32 msg, u32 flag)
 s32 IOS_JamMessage(s32 id, s32 msg, u32 flag)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_jammessage(id, msg, flag);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1695,23 +1695,23 @@ s32 IOS_JamMessage(s32 id, s32 msg, u32 flag)
 }
 
 // SPAM
-/*
+#if 0
 s32 IOS_ReceiveMessage(s32 id, s32 *msg, u32 flag)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_rcvmessage(id, msg, flag);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(%d, 0x%08x, %d)=%d\n", __FUNCTION__, id, msg, flag, retval);
 	return retval;
 }
-*/
+#endif
 
 s32 IOS_HandleEvent(u32 ev, s32 id, s32 msg)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_handleev(ev, id, msg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1722,7 +1722,7 @@ s32 IOS_HandleEvent(u32 ev, s32 id, s32 msg)
 s32 IOS_UnhandleEvent(u32 ev)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_unhandleev(ev);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1733,7 +1733,7 @@ s32 IOS_UnhandleEvent(u32 ev)
 s32 IOS_CreateTimer(u32 val, u32 interval, s32 mqid, s32 msg)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_createtimer(val, interval, mqid, msg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1744,7 +1744,7 @@ s32 IOS_CreateTimer(u32 val, u32 interval, s32 mqid, s32 msg)
 s32 IOS_RestartTimer(s32 id, u32 val, u32 interval)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_restarttimer(id, val, interval);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1755,7 +1755,7 @@ s32 IOS_RestartTimer(s32 id, u32 val, u32 interval)
 s32 IOS_StopTimer(s32 id)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_stoptimer(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1766,7 +1766,7 @@ s32 IOS_StopTimer(s32 id)
 s32 IOS_DestroyTimer(s32 id)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_destroytimer(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1777,7 +1777,7 @@ s32 IOS_DestroyTimer(s32 id)
 u32 IOS_GetTimer(void)
 {
 	u32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_gettimer();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1788,7 +1788,7 @@ u32 IOS_GetTimer(void)
 s32 IOS_CreateHeap(void *ptr, u32 size)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_createheap(ptr, size);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1799,7 +1799,7 @@ s32 IOS_CreateHeap(void *ptr, u32 size)
 s32 IOS_DestroyHeap(s32 id)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_destroyheap(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1810,7 +1810,7 @@ s32 IOS_DestroyHeap(s32 id)
 void *IOS_Alloc(s32 id, u32 size)
 {
 	void *retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_alloc(id, size);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1821,7 +1821,7 @@ void *IOS_Alloc(s32 id, u32 size)
 void *IOS_AllocAligned(s32 id, u32 size, u32 align)
 {
 	void *retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_allocaligned(id, size, align);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1832,7 +1832,7 @@ void *IOS_AllocAligned(s32 id, u32 size, u32 align)
 s32 IOS_Free(s32 id, void *ptr)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_free(id, ptr);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1843,7 +1843,7 @@ s32 IOS_Free(s32 id, void *ptr)
 s32 IOS_RegisterResourceManager(char *path, s32 id)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_registerrm(path, id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1854,7 +1854,7 @@ s32 IOS_RegisterResourceManager(char *path, s32 id)
 s32 IOS_Open(const char *filename, u32 mode)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 
 	// This is really just for debug spew
 	retval = ios_open(filename, mode);
@@ -1867,7 +1867,7 @@ s32 IOS_Open(const char *filename, u32 mode)
 s32 IOS_Close(s32 fd)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_close(fd);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1878,7 +1878,7 @@ s32 IOS_Close(s32 fd)
 s32 IOS_Read(s32 fd, void *buf, u32 count)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_read(fd, buf, count);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1889,7 +1889,7 @@ s32 IOS_Read(s32 fd, void *buf, u32 count)
 s32 IOS_Write(s32 fd, void *buf, u32 count)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_write(fd, buf, count);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1900,7 +1900,7 @@ s32 IOS_Write(s32 fd, void *buf, u32 count)
 s32 IOS_Seek(s32 fd, s32 offset, u32 whence)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_seek(fd, offset, whence);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1911,7 +1911,7 @@ s32 IOS_Seek(s32 fd, s32 offset, u32 whence)
 s32 IOS_Ioctl(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_ioctl(fd, cmd, in, inlen, out, outlen);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1922,7 +1922,7 @@ s32 IOS_Ioctl(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen)
 s32 IOS_Ioctlv(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_ioctlv(fd, cmd, read, written, vec);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1933,7 +1933,7 @@ s32 IOS_Ioctlv(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec)
 s32 IOS_OpenAsync(const char *filename, u32 mode, s32 id, ioresreq *reply)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_openasync(filename, mode, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1944,7 +1944,7 @@ s32 IOS_OpenAsync(const char *filename, u32 mode, s32 id, ioresreq *reply)
 s32 IOS_CloseAsync(s32 fd, s32 id, ioresreq *reply)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_closeasync(fd, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1955,7 +1955,7 @@ s32 IOS_CloseAsync(s32 fd, s32 id, ioresreq *reply)
 s32 IOS_ReadAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_readasync(fd, buf, count, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1966,7 +1966,7 @@ s32 IOS_ReadAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 s32 IOS_WriteAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_writeasync(fd, buf, count, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1977,7 +1977,7 @@ s32 IOS_WriteAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 s32 IOS_SeekAsync(s32 fd, s32 offset, u32 whence, s32 id, ioresreq *reply)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_seekasync(fd, offset, whence, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1988,7 +1988,7 @@ s32 IOS_SeekAsync(s32 fd, s32 offset, u32 whence, s32 id, ioresreq *reply)
 s32 IOS_IoctlAsync(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen, s32 id, ioresreq *reply)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_ioctlasync(fd, cmd, in, inlen, out, outlen, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -1999,7 +1999,7 @@ s32 IOS_IoctlAsync(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen, 
 s32 IOS_IoctlvAsync(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec, s32 id, ioresreq *reply)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_ioctlvasync(fd, cmd, read, written, vec, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2010,7 +2010,7 @@ s32 IOS_IoctlvAsync(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec, s32 id, 
 s32 IOS_ResourceReply(ioresreq *reply, s32 status)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_resourcereply(reply, status);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2021,7 +2021,7 @@ s32 IOS_ResourceReply(ioresreq *reply, s32 status)
 s32 IOS_SetUid(s32 id, u32 uid)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setuid(id, uid);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2032,7 +2032,7 @@ s32 IOS_SetUid(s32 id, u32 uid)
 u32 IOS_GetUid(void)
 {
 	u32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getuid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2043,7 +2043,7 @@ u32 IOS_GetUid(void)
 s32 IOS_SetGid(s32 id, u16 gid)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setgid(id, gid);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2054,7 +2054,7 @@ s32 IOS_SetGid(s32 id, u16 gid)
 u16 IOS_GetGid(void)
 {
 	u16 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getgid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2063,33 +2063,33 @@ u16 IOS_GetGid(void)
 }
 
 // SPAM
-/*
+#if 0
 void IOS_FlushMem(s32 grp)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_flushmem(grp);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(%d)\n", __FUNCTION__, grp);
 }
-*/
+#endif
 
 // SPAM
-/*
+#if 0
 void IOS_InvalidateRdb(s32 buf)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_invalrdb(buf);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(%d)\n", __FUNCTION__, buf);
 }
-*/
+#endif
 
 s32 IOS_ClearAndEnableIPCIOPIntr(void)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_clrenipciopintr();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2100,7 +2100,7 @@ s32 IOS_ClearAndEnableIPCIOPIntr(void)
 s32 IOS_ClearAndEnableDIIntr(void)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_clrendiintr();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2111,7 +2111,7 @@ s32 IOS_ClearAndEnableDIIntr(void)
 s32 IOS_ClearAndEnableSDIntr(u8 num)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_clrensdintr(num);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2122,7 +2122,7 @@ s32 IOS_ClearAndEnableSDIntr(u8 num)
 s32 IOS_ClearAndEnableEvent(u32 evt)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_clrenevt(evt);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2133,7 +2133,7 @@ s32 IOS_ClearAndEnableEvent(u32 evt)
 s32 IOS_AccessIobPool(iosiobpoolid pool)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_accessiobpool(pool);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2144,7 +2144,7 @@ s32 IOS_AccessIobPool(iosiobpoolid pool)
 iosiobuf *IOS_AllocIob(u32 pool, u32 size, u32 dbg)
 {
 	iosiobuf *retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_allociob(pool, size, dbg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2155,7 +2155,7 @@ iosiobuf *IOS_AllocIob(u32 pool, u32 size, u32 dbg)
 s32 IOS_FreeIob(iosiobuf *ptr)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_freeiob(ptr);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2165,7 +2165,7 @@ s32 IOS_FreeIob(iosiobuf *ptr)
 
 void IOS_DebugDumpIobFreeHdrsList(void)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_dbgdumpiobfreehdrlist();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2174,7 +2174,7 @@ void IOS_DebugDumpIobFreeHdrsList(void)
 
 void IOS_DebugDumpIobFreeBufsList(void)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_dbgdumpiobfreebuflist();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2184,7 +2184,7 @@ void IOS_DebugDumpIobFreeBufsList(void)
 u8 *IOS_PutIob(iosiobuf *iob, u16 len)
 {
 	u8 *retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_putiob(iob, len);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2195,7 +2195,7 @@ u8 *IOS_PutIob(iosiobuf *iob, u16 len)
 u8 *IOS_PushIob(iosiobuf *iob, u16 len)
 {
 	u8 *retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_pushiob(iob, len);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2206,7 +2206,7 @@ u8 *IOS_PushIob(iosiobuf *iob, u16 len)
 u8 *IOS_PullIob(iosiobuf *iob, u16 len)
 {
 	u8 *retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_pulliob(iob, len);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2215,23 +2215,23 @@ u8 *IOS_PullIob(iosiobuf *iob, u16 len)
 }
 
 // SPAM
-/*
+#if 0
 s32 IOS_IsValidIob(iosiobuf *iob)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_validiob(iob);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(%08x)=%d\n", __FUNCTION__, (u32)iob, retval);
 	return retval;
 }
-*/
+#endif
 
 iosiobuf *IOS_CloneIob(iosiobuf *iob)
 {
 	iosiobuf *retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_cloneiob(iob);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2240,32 +2240,32 @@ iosiobuf *IOS_CloneIob(iosiobuf *iob)
 }
 
 // SPAM
-/*
+#if 0
 void IOS_InvalidateDCache(void *ptr, u32 size)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_invaldcache(ptr, size);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(0x%08x, 0x%x)\n", __FUNCTION__, ptr, size);
 }
-*/
+#endif
 
 // SPAM
-/*
+#if 0
 void IOS_FlushDCache(void *ptr, u32 size)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_flushdcache(ptr, size);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(0x%08x, 0x%x)\n", __FUNCTION__, ptr, size);
 }
-*/
+#endif
 
 void IOS_LaunchOSFromMemory(u32 addr, u32 ver)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_launchosfrommem(addr, ver);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2275,7 +2275,7 @@ void IOS_LaunchOSFromMemory(u32 addr, u32 ver)
 s32 IOS_ResetDI(void)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_resetdi();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2286,7 +2286,7 @@ s32 IOS_ResetDI(void)
 s32 IOS_ReleaseDIReset(void)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_releasedi();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2297,7 +2297,7 @@ s32 IOS_ReleaseDIReset(void)
 u8 IOS_IsDIReset(void)
 {
 	u8 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_isdireset();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2307,7 +2307,7 @@ u8 IOS_IsDIReset(void)
 
 void IOS_GetOSVersion(u32 *major, u16 *minor)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_getosver(major, minor);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2316,7 +2316,7 @@ void IOS_GetOSVersion(u32 *major, u16 *minor)
 
 void IOS_GetBootVersion(u32 *major, u16 *minor)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_getbootver(major, minor);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2326,7 +2326,7 @@ void IOS_GetBootVersion(u32 *major, u16 *minor)
 u32 IOS_GetDDRVendorIds(void)
 {
 	u32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getddrvenids();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2337,7 +2337,7 @@ u32 IOS_GetDDRVendorIds(void)
 u32 IOS_GetHollywoodId(void)
 {
 	u32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_gethwid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2347,7 +2347,7 @@ u32 IOS_GetHollywoodId(void)
 
 void IOS_GetUsage(u32 usage)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_getusage(usage);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2357,7 +2357,7 @@ void IOS_GetUsage(u32 usage)
 s32 IOS_SetLoMemOSVersion(u32 ver)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setlomemosver(ver);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2368,7 +2368,7 @@ s32 IOS_SetLoMemOSVersion(u32 ver)
 u32 IOS_GetLoMemOSVersion(u32 ver)
 {
 	u32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getlomemosver(ver);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2379,7 +2379,7 @@ u32 IOS_GetLoMemOSVersion(u32 ver)
 s32 IOS_SetDiSpinup(u32 s)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setdispinup(s);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2388,23 +2388,23 @@ s32 IOS_SetDiSpinup(u32 s)
 }
 
 // SPAM
-/*
+#if 0
 void *IOS_VirtualToPhysical(void *virt)
 {
 	void *retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_vtop(virt);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(%08x)=%08x\n", __FUNCTION__, virt, retval);
 	return retval;
 }
-*/
+#endif
 
 s32 IOS_SetDVDReadDisable(u8 disable)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setdvdrddis(disable);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2415,7 +2415,7 @@ s32 IOS_SetDVDReadDisable(u8 disable)
 u8 IOS_GetDVDReadDisable(void)
 {
 	u8 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getdvdrddis();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2426,7 +2426,7 @@ u8 IOS_GetDVDReadDisable(void)
 s32 IOS_SetEnableAHBPI2DI(u8 enable)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setenahbpi2di(enable);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2437,7 +2437,7 @@ s32 IOS_SetEnableAHBPI2DI(u8 enable)
 u8 IOS_GetEnableAHBPI2DI(void)
 {
 	u8 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getenahbpi2di();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2448,7 +2448,7 @@ u8 IOS_GetEnableAHBPI2DI(void)
 s32 IOS_SetPPCACRPerms(u8 enable)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setppcacrperms(enable);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2459,7 +2459,7 @@ s32 IOS_SetPPCACRPerms(u8 enable)
 u32 IOS_GetCoreClk(void)
 {
 	u32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_getcoreclk();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2468,36 +2468,36 @@ u32 IOS_GetCoreClk(void)
 }
 
 // SPAM
-/*
+#if 0
 s32 IOS_ACRRegWrite(u32 offset, u32 value)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_acrregwr(offset, value);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(offset: 0x%08x, value: %d)=%d\n", __FUNCTION__, offset, value, retval);
 	return retval;
 }
-*/
+#endif
 
 // SPAM
-/*
+#if 0
 s32 IOS_DDRRegWrite(u32 offset, u32 value)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_ddrregwr(offset, value);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
 	printf("%s(offset: 0x%08x, value: %d)=%d\n", __FUNCTION__, offset, value, retval);
 	return retval;
 }
-*/
+#endif
 
 void IOS_OutputLed(u8 value)
 {
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	ios_outputled(value);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2507,7 +2507,7 @@ void IOS_OutputLed(u8 value)
 s32 IOS_SetIpcAccessRights(u8 *rights)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_setipcaccrights(rights);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2519,7 +2519,7 @@ s32 IOS_SetIpcAccessRights(u8 *rights)
 s32 IOS_LaunchElf(const char *filename)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_launchelf(filename);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2533,7 +2533,7 @@ s32 IOS_LaunchElf(const char *filename)
 s32 IOS_LaunchRM(const char *filename)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_launchrm(filename);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2545,7 +2545,7 @@ s32 IOS_LaunchRM(const char *filename)
 s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
 {
 	s32 retval;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 	retval = ios_launchos(filename, r1, filesize);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(babelfish_starlet_syscall_lr)));
@@ -2912,7 +2912,7 @@ void *_loadelf(const u8 *elf)
 	int count;
 	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *)elf;
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 /*
 	if (memcmp("\x7F" "ELF\x01\x02\x01", elf, 7))
 	{
@@ -3004,7 +3004,7 @@ void *_main(void *base)
 	disable_boot0();
 	gecko_init();
 
-	u32 cookie = irq_kill();
+	/*u32 cookie =*/ irq_kill();
 
 	if (memcmp("\x7F" "ELF\x01\x02\x01", elf, 7))
 	{
