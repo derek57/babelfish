@@ -252,7 +252,11 @@ void sdmmc_needs_discover(void)
 	else
 	{
 		unsigned int taac = resp[13];
+
+#if SDMMC_DEBUG
 		unsigned int nsac = resp[12];
+#endif
+
 		unsigned int read_bl_len = resp[9] & 0xF;
 		unsigned int c_size = (resp[8] & 3) << 10;
 		unsigned int c_size_mult = (resp[5] & 3) << 1;

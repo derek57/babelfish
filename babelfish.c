@@ -278,59 +278,6 @@ enum context
 	C_USBMSC
 };
 
-static const char *ctx_names[] =
-{
-	"BOOT0",	// 0
-	"BOOT1",	// 1
-	"BOOT2L",	// 2
-	"IOSLDR",	// 3
-	"KERNEL",	// 4
-	"CRYPTO",	// 5
-	"FS_V",		// 6
-	"ES_V",		// 7
-	"DI_V",		// 8
-	"STM_V",	// 9
-	"SDI_V",	// 10
-	"OH0",		// 11
-	"OH1",		// 12
-	"KD",		// 13
-	"WD",		// 14
-	"WL",		// 15
-	"NCD",		// 16
-	"USBETH",	// 17
-	"KBD",		// 18
-	"SSL",		// 19
-	"BOOTMII",	// 20
-
-	// [nitr8]: New stuff
-	"MEM2",		// 21
-	"SDBOOT",	// 22
-	"SO",		// 23
-	"PS",		// 24
-	"STM_P",	// 25
-	"IOBUFS",	// 26
-	"RESERVE",	// 27
-	"SYSCALL",	// 28
-	"SDI_P",	// 39
-	"FS_P",		// 30
-	"ES_P",		// 31
-	"DI_P",		// 32
-	"SHARED",	// 33
-	"PPCBOOT",	// 34
-	"EHC",		// 35
-	"EHC_DMA",	// 36
-	"OH1_DMA",	// 37
-	"OH0_DMA",	// 38
-	"KERNEL_DATA",	// 39
-	"P2P",		// 40
-	"APPS",		// 41
-	"DI_DMA",	// 42
-	"REALLOC_PPC",	// 43
-	"KD-VF",	// 44
-	"USB",		// 45
-	"USBMSC"	// 46
-};
-
 volatile u32 babelfish_starlet_syscall_lr = 0;
 u32 babelfish_starlet_syscall_handler_orig = 0;
 extern void babelfish_starlet_syscall_shim(void);
@@ -496,54 +443,150 @@ static void babelfish_print_context_tag(int ctx, u32 pc)
 {
 	switch (ctx)
 	{
-		case C_BOOT0:		printf("[BOOT0] "); break;
-		case C_BOOT1:		printf("[BOOT1] "); break;
-		case C_BOOT2L:		printf("[BOOT2L] "); break;
-		case C_IOSLDR:		printf("[IOSLDR] "); break;
-		case C_KERNEL:		printf("[KERNEL] "); break;
-		case C_CRYPTO:		printf("[CRYPTO] "); break;
-		case C_FS_V:		printf("[FS_V] "); break;
-		case C_ES_V:		printf("[ES_V] "); break;
-		case C_DI_V:		printf("[DI_V] "); break;
-		case C_STM_V:		printf("[STM_V] "); break;
-		case C_SDI_V:		printf("[SDI_V] "); break;
-		case C_OH0:		printf("[OH0] "); break;
-		case C_OH1:		printf("[OH1] "); break;
-		case C_KD:		printf("[KD] "); break;
-		case C_WD:		printf("[WD] "); break;
-		case C_WL:		printf("[WL] "); break;
-		case C_NCD:		printf("[NCD] "); break;
-		case C_USBETH:		printf("[USBETH] "); break;
-		case C_KBD:		printf("[KBD] "); break;
-		case C_SSL:		printf("[SSL] "); break;
-		case C_BOOTMII:		printf("[BOOTMII] "); break;
-		case C_MEM2:		printf("[MEM2] "); break;
-		case C_SDBOOT:		printf("[SDBOOT] "); break;
-		case C_SO:		printf("[SO] "); break;
-		case C_PS:		printf("[PS] "); break;
-		case C_STM_P:		printf("[STM_P] "); break;
-		case C_IOBUFS:		printf("[IOBUFS] "); break;
-		case C_RESERVED:	printf("[RESERVE] "); break;
-		case C_SYSCALL:	printf("[SYSCALL] "); break;
-		case C_SDI_P:		printf("[SDI_P] "); break;
-		case C_FS_P:		printf("[FS_P] "); break;
-		case C_ES_P:		printf("[ES_P] "); break;
-		case C_DI_P:		printf("[DI_P] "); break;
-		case C_SHARED:		printf("[SHARED] "); break;
-		case C_PPCBOOT:	printf("[PPCBOOT] "); break;
-		case C_EHC:		printf("[EHC] "); break;
-		case C_EHC_DMA:	printf("[EHC_DMA] "); break;
-		case C_OH1_DMA:	printf("[OH1_DMA] "); break;
-		case C_OH0_DMA:	printf("[OH0_DMA] "); break;
-		case C_KERNEL_DATA:	printf("[KERNEL_DATA] "); break;
-		case C_P2P:		printf("[P2P] "); break;
-		case C_APPS:		printf("[APPS] "); break;
-		case C_DI_DMA:		printf("[DI_DMA] "); break;
-		case C_REALLOC_PPC:	printf("[REALLOC_PPC] "); break;
-		case C_KD_VF:		printf("[KD-VF] "); break;
-		case C_USB:		printf("[USB] "); break;
-		case C_USBMSC:	printf("[USBMSC] "); break;
-		default:		printf("[0x%04x] ", pc >> 16); break;
+		case C_BOOT0:
+			printf("[BOOT0] ");
+			break;
+		case C_BOOT1:
+			printf("[BOOT1] ");
+			break;
+		case C_BOOT2L:
+			printf("[BOOT2L] ");
+			break;
+		case C_IOSLDR:
+			printf("[IOSLDR] ");
+			break;
+		case C_KERNEL:
+			printf("[KERNEL] ");
+			break;
+		case C_CRYPTO:
+			printf("[CRYPTO] ");
+			break;
+		case C_FS_V:
+			printf("[FS_V] ");
+			break;
+		case C_ES_V:
+			printf("[ES_V] ");
+			break;
+		case C_DI_V:
+			printf("[DI_V] ");
+			break;
+		case C_STM_V:
+			printf("[STM_V] ");
+			break;
+		case C_SDI_V:
+			printf("[SDI_V] ");
+			break;
+		case C_OH0:
+			printf("[OH0] ");
+			break;
+		case C_OH1:
+			printf("[OH1] ");
+			break;
+		case C_KD:
+			printf("[KD] ");
+			break;
+		case C_WD:
+			printf("[WD] ");
+			break;
+		case C_WL:
+			printf("[WL] ");
+			break;
+		case C_NCD:
+			printf("[NCD] ");
+			break;
+		case C_USBETH:
+			printf("[USBETH] ");
+			break;
+		case C_KBD:
+			printf("[KBD] ");
+			break;
+		case C_SSL:
+			printf("[SSL] ");
+			break;
+		case C_BOOTMII:
+			printf("[BOOTMII] ");
+			break;
+		case C_MEM2:
+			printf("[MEM2] ");
+			break;
+		case C_SDBOOT:
+			printf("[SDBOOT] ");
+			break;
+		case C_SO:
+			printf("[SO] ");
+			break;
+		case C_PS:
+			printf("[PS] ");
+			break;
+		case C_STM_P:
+			printf("[STM_P] ");
+			break;
+		case C_IOBUFS:
+			printf("[IOBUFS] ");
+			break;
+		case C_RESERVED:
+			printf("[RESERVE] ");
+			break;
+		case C_SYSCALL:
+			printf("[SYSCALL] ");
+			break;
+		case C_SDI_P:
+			printf("[SDI_P] ");
+			break;
+		case C_FS_P:
+			printf("[FS_P] ");
+			break;
+		case C_ES_P:
+			printf("[ES_P] ");
+			break;
+		case C_DI_P:
+			printf("[DI_P] ");
+			break;
+		case C_SHARED:
+			printf("[SHARED] ");
+			break;
+		case C_PPCBOOT:
+			printf("[PPCBOOT] ");
+			break;
+		case C_EHC:
+			printf("[EHC] ");
+			break;
+		case C_EHC_DMA:
+			printf("[EHC_DMA] ");
+			break;
+		case C_OH1_DMA:
+			printf("[OH1_DMA] ");
+			break;
+		case C_OH0_DMA:
+			printf("[OH0_DMA] ");
+			break;
+		case C_KERNEL_DATA:
+			printf("[KERNEL_DATA] ");
+			break;
+		case C_P2P:
+			printf("[P2P] ");
+			break;
+		case C_APPS:
+			printf("[APPS] ");
+			break;
+		case C_DI_DMA:
+			printf("[DI_DMA] ");
+			break;
+		case C_REALLOC_PPC:
+			printf("[REALLOC_PPC] ");
+			break;
+		case C_KD_VF:
+			printf("[KD-VF] ");
+			break;
+		case C_USB:
+			printf("[USB] ");
+			break;
+		case C_USBMSC:
+			printf("[USBMSC] ");
+			break;
+		default:
+			printf("[0x%04x] ", pc >> 16);
+			break;
 	}
 }
 
