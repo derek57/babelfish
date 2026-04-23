@@ -248,7 +248,7 @@ s32 printf (const char* str, ...)
 		}
 	}
 
-	irq_restore(cookie);
+	//irq_restore(cookie);
 	va_end(arp);
 	return pos;
 }
