@@ -39,7 +39,7 @@
 static int sdhcdebug = 0;
 #define DPRINTF(n,s)		do { if ((n) <= sdhcdebug) printf s; } while (0)
 #else
-#define DPRINTF(n,s)		do {} while(0)
+#define DPRINTF(...)
 #endif
 
 /* flag values */
@@ -202,7 +202,7 @@ int sdhc_soft_reset(struct sdhc_host *hp, int mask)
 {
 	int timo;
 
-	DPRINTF(1, ("sdhc: software reset reg=%#x\n", mask));
+	DPRINTF(1, "sdhc: software reset reg=%#x\n", mask);
 
 	HWRITE1(hp, SDHC_SOFTWARE_RESET, mask);
 
@@ -217,7 +217,7 @@ int sdhc_soft_reset(struct sdhc_host *hp, int mask)
 
 	if (timo == 0)
 	{
-		DPRINTF(1, ("sdhc: timeout reg=%#x\n", HREAD1(hp, SDHC_SOFTWARE_RESET)));
+		DPRINTF(1, "sdhc: timeout reg=%#x\n", HREAD1(hp, SDHC_SOFTWARE_RESET));
 		HWRITE1(hp, SDHC_SOFTWARE_RESET, 0);
 		return (ETIMEDOUT);
 	}
@@ -280,7 +280,7 @@ int sdhc_card_detect(struct sdhc_host *hp)
  */
 int sdhc_bus_power(struct sdhc_host *hp, u_int32_t ocr)
 {
-	printf("sdhc_bus_power(%u)\n", ocr);
+	DPRINTF(0, "sdhc_bus_power(%u)\n", ocr);
 
 	/* Disable bus power before voltage change. */
 	HWRITE1(hp, SDHC_POWER_CTL, 0);
@@ -340,7 +340,7 @@ int sdhc_bus_clock(struct sdhc_host *hp, int freq)
 	int div;
 	int timo;
 
-	printf("%s(%d)\n", __FUNCTION__, freq);
+	DPRINTF(0, "%s(%d)\n", __FUNCTION__, freq);
 
 #ifdef DIAGNOSTIC
 	/* Must not stop the clock if commands are in progress. */
@@ -418,7 +418,7 @@ int sdhc_wait_state(struct sdhc_host *hp, u_int32_t mask, u_int32_t value)
 		delay(10000);
 	}
 
-	DPRINTF(0, ("sdhc: timeout waiting for %x (state=%d)\n", value, state));
+	DPRINTF(0, "sdhc: timeout waiting for %x (state=%d)\n", value, state);
 	return ETIMEDOUT;
 }
 
@@ -472,8 +472,8 @@ int sdhc_wait_intr_debug(const char *funcname, int line, struct sdhc_host *hp, i
 
 	hp->intr_status &= ~status;
 
-	DPRINTF(2, ("sdhc: funcname=%s, line=%d, timo=%d status=%#x intr status=%#x error %#x\n", 
-		funcname, line, timo, status, hp->intr_status, hp->intr_error_status));
+	DPRINTF(2, "sdhc: funcname=%s, line=%d, timo=%d status=%#x intr status=%#x error %#x\n", 
+		funcname, line, timo, status, hp->intr_status, hp->intr_error_status);
 
 	/* Command timeout has higher priority than command complete. */
 	if (ISSET(status, SDHC_ERROR_INTERRUPT))
@@ -503,7 +503,7 @@ void sdhc_transfer_data(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	int status;
 	int error = 0;
 
-	DPRINTF(1, ("resp=%#x datalen=%d\n", MMC_R1(cmd->c_resp), cmd->c_datalen));
+	DPRINTF(1, "resp=%#x datalen=%d\n", MMC_R1(cmd->c_resp), cmd->c_datalen);
 
 	if (ISSET(hp->flags, SHF_USE_DMA))
 	{
@@ -527,7 +527,7 @@ void sdhc_transfer_data(struct sdhc_host *hp, struct sdmmc_command *cmd)
 
 			if (ISSET(status, SDHC_DMA_INTERRUPT))
 			{
-				DPRINTF(2, ("sdhc: dma left:%#x\n", HREAD2(hp, SDHC_BLOCK_COUNT)));
+				DPRINTF(2, "sdhc: dma left:%#x\n", HREAD2(hp, SDHC_BLOCK_COUNT));
 
 				// this works because our virtual memory
 				// addresses are equal to the physical memory
@@ -556,7 +556,7 @@ void sdhc_transfer_data(struct sdhc_host *hp, struct sdmmc_command *cmd)
 
 	SET(cmd->c_flags, SCF_ITSDONE);
 
-	DPRINTF(1, ("sdhc: data transfer done (error=%d)\n", cmd->c_error));
+	DPRINTF(1, "sdhc: data transfer done (error=%d)\n", cmd->c_error);
 	return;
 }
 
@@ -568,8 +568,8 @@ int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	u_int16_t blksize = 0;
 	u_int16_t blkcount = 0;
 
-	DPRINTF(1, ("sdhc: start cmd %u arg=%#x data=%p dlen=%d flags=%#x\n", 
-		cmd->c_opcode, cmd->c_arg, cmd->c_data, cmd->c_datalen, cmd->c_flags));
+	DPRINTF(1, "sdhc: start cmd %u arg=%#x data=%p dlen=%d flags=%#x\n", 
+		cmd->c_opcode, cmd->c_arg, cmd->c_data, cmd->c_datalen, cmd->c_flags);
 
 	/*
 	 * The maximum block length for commands should be the minimum
@@ -664,7 +664,7 @@ int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 		HWRITE4(hp, SDHC_DMA_ADDR, (u32)cmd->c_data);
 	}
 
-	DPRINTF(1, ("sdhc: cmd=%#x mode=%#x blksize=%d blkcount=%d\n", command, mode, blksize, blkcount));
+	DPRINTF(1, "sdhc: cmd=%#x mode=%#x blksize=%d blkcount=%d\n", command, mode, blksize, blkcount);
 
 	/*
 	 * Start a CPU data transfer.  Writing to the high order byte
@@ -758,8 +758,8 @@ void sdhc_exec_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	if ((cmd->c_error == 0) && (cmd->c_datalen > 0))
 		sdhc_transfer_data(hp, cmd);
 
-	DPRINTF(1, ("sdhc: cmd %u done (flags=%#x error=%d prev state=%d)\n",
-	    cmd->c_opcode, cmd->c_flags, cmd->c_error, (cmd->c_resp[0] >> 9) & 15));
+	DPRINTF(1, "sdhc: cmd %u done (flags=%#x error=%d prev state=%d)\n",
+	    cmd->c_opcode, cmd->c_flags, cmd->c_error, (cmd->c_resp[0] >> 9) & 15);
 
 	SET(cmd->c_flags, SCF_ITSDONE);
 	hp->data_command = 0;
@@ -772,7 +772,7 @@ int sdhc_intr(void)
 {
 	u_int16_t status;
 
-	DPRINTF(1, ("shdc_intr():\n"));
+	DPRINTF(1, "shdc_intr():\n");
 //	sdhc_dump_regs(&sc_host);
 		
 	/* Find out which interrupts are pending. */
@@ -780,13 +780,13 @@ int sdhc_intr(void)
 
 	if (!ISSET(status, SDHC_NINTR_STATUS_MASK))
 	{
-		DPRINTF(1, ("unknown interrupt\n"));
+		DPRINTF(1, "unknown interrupt\n");
 		return 0;
 	}
 
 	/* Acknowledge the interrupts we are about to handle. */
 	HWRITE2(&sc_host, SDHC_NINTR_STATUS, status);
-	DPRINTF(2, ("sdhc: interrupt status=%d\n", status));
+	DPRINTF(2, "sdhc: interrupt status=%d\n", status);
 
 	/* Service error interrupts. */
 	if (ISSET(status, SDHC_ERROR_INTERRUPT))
@@ -812,7 +812,7 @@ int sdhc_intr(void)
 		HWRITE2(&sc_host, SDHC_EINTR_STATUS, error);
 		HWRITE2(&sc_host, SDHC_EINTR_SIGNAL_EN, signal);
 
-		DPRINTF(2, ("sdhc: error interrupt, status=%d\n", error));
+		DPRINTF(2, "sdhc: error interrupt, status=%d\n", error);
 
 		if (ISSET(error, SDHC_CMD_TIMEOUT_ERROR | SDHC_DATA_TIMEOUT_ERROR))
 		{
@@ -834,7 +834,7 @@ int sdhc_intr(void)
 	/* Service SD card interrupts. */
 	if  (ISSET(status, SDHC_CARD_INTERRUPT))
 	{
-		DPRINTF(0, ("sdhc: card interrupt\n"));
+		DPRINTF(0, "sdhc: card interrupt\n");
 		HCLR2(&sc_host, SDHC_NINTR_STATUS_EN, SDHC_CARD_INTERRUPT);
 	}
 

@@ -22,7 +22,7 @@ Copyright (C) 2008, 2009	Sven Peter <svenpeter@gmail.com>
 static int sdmmcdebug = 0;
 #define DPRINTF(n,s)	do { if ((n) <= sdmmcdebug) printf s; } while (0)
 #else
-#define DPRINTF(n,s)	do {} while(0)
+#define DPRINTF(...)
 #endif
 
 
@@ -51,12 +51,12 @@ void sdmmc_attach(sdmmc_chipset_handle_t handle)
 {
 	memset(&card, 0, sizeof(card));
 	card.handle = handle;
-	DPRINTF(0, ("sdmmc: attached new SD/MMC card\n"));
+	DPRINTF(0, "sdmmc: attached new SD/MMC card\n");
 	sdhc_host_reset(card.handle);
 
 	if (sdhc_card_detect(card.handle))
 	{
-		DPRINTF(1, ("card is inserted. starting init sequence.\n"));
+		DPRINTF(1, "card is inserted. starting init sequence.\n");
 		sdmmc_needs_discover();
 	}
 }
@@ -81,18 +81,18 @@ void sdmmc_needs_discover(void)
 	u8 *resp;
 	int i;
 
-	DPRINTF(0, ("sdmmc: card needs discovery.\n"));
+	DPRINTF(0, "sdmmc: card needs discovery.\n");
 	sdhc_host_reset(card.handle);
 	card.new_card = 1;
 
 	if (!sdhc_card_detect(card.handle))
 	{
-		DPRINTF(1, ("sdmmc: card (no longer?) inserted.\n"));
+		DPRINTF(1, "sdmmc: card (no longer?) inserted.\n");
 		card.inserted = 0;
 		return;
 	}
 
-	DPRINTF(1, ("sdmmc: enabling power\n"));
+	DPRINTF(1, "sdmmc: enabling power\n");
 
 	if (sdhc_bus_power(card.handle, 1) != 0)
 	{
@@ -100,7 +100,7 @@ void sdmmc_needs_discover(void)
 		goto out;
 	}
 
-	DPRINTF(1, ("sdmmc: enabling clock\n"));
+	DPRINTF(1, "sdmmc: enabling clock\n");
 
 	if (sdhc_bus_clock(card.handle, SDMMC_DEFAULT_CLOCK) != 0)
 	{
@@ -108,7 +108,7 @@ void sdmmc_needs_discover(void)
 		goto out_power;
 	}
 
-	DPRINTF(1, ("sdmmc: sending GO_IDLE_STATE\n"));
+	DPRINTF(1, "sdmmc: sending GO_IDLE_STATE\n");
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = MMC_GO_IDLE_STATE;
 	cmd.c_flags = SCF_RSP_R0;
@@ -120,8 +120,8 @@ void sdmmc_needs_discover(void)
 		goto out_clock;
 	}
 
-	DPRINTF(2, ("sdmmc: GO_IDLE_STATE response: %x\n", MMC_R1(cmd.c_resp)));
-	DPRINTF(1, ("sdmmc: sending SEND_IF_COND\n"));
+	DPRINTF(2, "sdmmc: GO_IDLE_STATE response: %x\n", MMC_R1(cmd.c_resp));
+	DPRINTF(1, "sdmmc: sending SEND_IF_COND\n");
 
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = SD_SEND_IF_COND;
@@ -137,7 +137,7 @@ void sdmmc_needs_discover(void)
 	else
 		ocr |= SD_OCR_SDHC_CAP;
 
-	DPRINTF(2, ("sdmmc: SEND_IF_COND ocr: %x\n", ocr));
+	DPRINTF(2, "sdmmc: SEND_IF_COND ocr: %x\n", ocr);
 
 	for (tries = 100; tries > 0; tries--)
 	{
@@ -160,7 +160,7 @@ void sdmmc_needs_discover(void)
 		if (cmd.c_error)
 			continue;
 
-		DPRINTF(3, ("sdmmc: response for SEND_IF_COND: %08x\n", MMC_R1(cmd.c_resp)));
+		DPRINTF(3, "sdmmc: response for SEND_IF_COND: %08x\n", MMC_R1(cmd.c_resp));
 
 		if (ISSET(MMC_R1(cmd.c_resp), MMC_OCR_MEM_READY))
 			break;
@@ -177,8 +177,8 @@ void sdmmc_needs_discover(void)
 	else
 		card.sdhc_blockmode = 0;
 
-	DPRINTF(2, ("sdmmc: SDHC: %d\n", card.sdhc_blockmode));
-	DPRINTF(2, ("sdmmc: MMC_ALL_SEND_CID\n"));
+	DPRINTF(2, "sdmmc: SDHC: %d\n", card.sdhc_blockmode);
+	DPRINTF(2, "sdmmc: MMC_ALL_SEND_CID\n");
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = MMC_ALL_SEND_CID;
 	cmd.c_arg = 0;
@@ -194,11 +194,11 @@ void sdmmc_needs_discover(void)
 	card.cid = MMC_R1(cmd.c_resp);
 	resp = (u8 *)cmd.c_resp;
 
-	printf("CID: mid=%02x name='%c%c%c%c%c%c%c' prv=%d.%d psn=%02x%02x%02x%02x mdt=%d/%d\n", resp[14], 
+	DPRINTF(0, "CID: mid=%02x name='%c%c%c%c%c%c%c' prv=%d.%d psn=%02x%02x%02x%02x mdt=%d/%d\n", resp[14], 
 		resp[13], resp[12], resp[11], resp[10], resp[9], resp[8], resp[7], resp[6], resp[5] >> 4, resp[5] & 0xf, 
 		resp[4], resp[3], resp[2], resp[0] & 0xf, 2000 + (resp[0] >> 4));
 		
-	DPRINTF(2, ("sdmmc: SD_SEND_RELATIVE_ADDRESS\n"));
+	DPRINTF(2, "sdmmc: SD_SEND_RELATIVE_ADDRESS\n");
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = SD_SEND_RELATIVE_ADDR;
 	cmd.c_arg = 0;
@@ -212,7 +212,7 @@ void sdmmc_needs_discover(void)
 	}
 
 	card.rca = MMC_R1(cmd.c_resp)>>16;
-	DPRINTF(2, ("sdmmc: rca: %08x\n", card.rca));
+	DPRINTF(2, "sdmmc: rca: %08x\n", card.rca);
 	card.selected = 0;
 	card.inserted = 1;
 	memset(&cmd, 0, sizeof(cmd));
@@ -229,12 +229,12 @@ void sdmmc_needs_discover(void)
 
 	resp = (u8 *)cmd.c_resp;
 
-	printf("csd: ");
+	DPRINTF(0, "csd: ");
 
 	for (i = 15; i >= 0; i--)
-		printf("%02x ", (u32) resp[i]);
+		DPRINTF(0, "%02x ", (u32) resp[i]);
 
-	printf("\n");
+	DPRINTF(0, "\n");
 
 	// sdhc
 	if (resp[13] == 0xe)
@@ -266,17 +266,17 @@ void sdmmc_needs_discover(void)
 		c_size |= (resp[6] >> 6);
 		c_size_mult |= resp[4] >> 7;
 
-		printf("taac=%u nsac=%u read_bl_len=%u c_size=%u c_size_mult=%u card size=%u bytes\n",
+		DPRINTF(0, "taac=%u nsac=%u read_bl_len=%u c_size=%u c_size_mult=%u card size=%u bytes\n",
 			taac, nsac, read_bl_len, c_size, c_size_mult,
 			(c_size + 1) * (4 << c_size_mult) * (1 << read_bl_len));
 
 		card.timeout = time_unit[taac & 7] * time_value[(taac >> 3) & 0xf] / 10;
-		printf("calculated timeout =  %uns\n", card.timeout);
+		DPRINTF(0, "calculated timeout =  %uns\n", card.timeout);
 		card.num_sectors = (c_size + 1) * (4 << c_size_mult) * (1 << read_bl_len) / 512;
 	}
 
 	sdmmc_select();
-	DPRINTF(2, ("sdmmc: MMC_SET_BLOCKLEN\n"));
+	DPRINTF(2, "sdmmc: MMC_SET_BLOCKLEN\n");
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = MMC_SET_BLOCKLEN;
 	cmd.c_arg = SDMMC_DEFAULT_BLOCKLEN;
@@ -310,13 +310,13 @@ int sdmmc_select(void)
 {
 	struct sdmmc_command cmd;
 
-	DPRINTF(2, ("sdmmc: MMC_SELECT_CARD\n"));
+	DPRINTF(2, "sdmmc: MMC_SELECT_CARD\n");
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = MMC_SELECT_CARD;
 	cmd.c_arg = ((u32)card.rca)<<16;
 	cmd.c_flags = SCF_RSP_R1B;
 	sdhc_exec_command(card.handle, &cmd);
-	printf("%s: resp=%x\n", __FUNCTION__, MMC_R1(cmd.c_resp));
+	DPRINTF(0, "%s: resp=%x\n", __FUNCTION__, MMC_R1(cmd.c_resp));
 //	sdhc_dump_regs(card.handle);
 
 //	printf("present state = %x\n", HREAD4(hp, SDHC_PRESENT_STATE));
@@ -380,7 +380,7 @@ int sdmmc_read(u32 blk_start, u32 blk_count, void *data)
 		return -1;
 	}
 
-	DPRINTF(2, ("sdmmc: MMC_READ_BLOCK_MULTIPLE\n"));
+	DPRINTF(2, "sdmmc: MMC_READ_BLOCK_MULTIPLE\n");
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = MMC_READ_BLOCK_MULTIPLE;
 
@@ -401,7 +401,7 @@ int sdmmc_read(u32 blk_start, u32 blk_count, void *data)
 		return -1;
 	}
 
-	DPRINTF(2, ("sdmmc: MMC_READ_BLOCK_MULTIPLE done\n"));
+	DPRINTF(2, "sdmmc: MMC_READ_BLOCK_MULTIPLE done\n");
 
 	return 0;
 }
@@ -432,7 +432,7 @@ int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
 		return -1;
 	}
 
-	DPRINTF(2, ("sdmmc: MMC_WRITE_BLOCK_MULTIPLE\n"));
+	DPRINTF(2, "sdmmc: MMC_WRITE_BLOCK_MULTIPLE\n");
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = MMC_WRITE_BLOCK_MULTIPLE;
 
@@ -453,7 +453,7 @@ int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
 		return -1;
 	}
 
-	DPRINTF(2, ("sdmmc: MMC_WRITE_BLOCK_MULTIPLE done\n"));
+	DPRINTF(2, "sdmmc: MMC_WRITE_BLOCK_MULTIPLE done\n");
 
 	return 0;
 }

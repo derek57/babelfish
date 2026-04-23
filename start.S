@@ -17,7 +17,10 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 .extern __bss_end
 .extern __stack_addr
 .extern delay
+.extern babelfish_starlet_syscall_handler_orig
+.extern babelfish_starlet_syscall_lr
 .globl _start
+.globl babelfish_starlet_syscall_shim
 .globl debug_output
 .globl dc_flush
 .globl irq_kill
@@ -130,6 +133,35 @@ done_bss:
 
 .pool
 @ misc low-level funcs used by other parts of the code
+@
+@ Hook target for kernel_mem32[9] (starlet_syscall_handler vector).
+@ Capture the raw exception LR before IOS dispatch reaches Babelfish
+@ syscall-table wrappers, then tail-chain to the original handler.
+@
+@ This code runs from Babelfish's relocated image, so it must compute
+@ the relocation delta from its own PC before touching C globals.
+@
+babelfish_starlet_syscall_shim:
+	stmfd	sp!, {r0, r1}
+	adr	r12, .Lshim_here
+	ldr	r0, .Lshim_here_abs
+	sub	r12, r12, r0
+	ldr	r0, .Lshim_lr_abs
+	add	r0, r0, r12
+	str	lr, [r0]
+	ldr	r0, .Lshim_orig_abs
+	add	r0, r0, r12
+	ldr	r12, [r0]
+	ldmfd	sp!, {r0, r1}
+	bx	r12
+
+.Lshim_here:
+.Lshim_here_abs:
+	.word	.Lshim_here
+.Lshim_lr_abs:
+	.word	babelfish_starlet_syscall_lr
+.Lshim_orig_abs:
+	.word	babelfish_starlet_syscall_handler_orig
 
 debug_output:
 	@ load address of port
