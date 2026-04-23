@@ -17,10 +17,10 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 .extern __bss_end
 .extern __stack_addr
 .extern delay
-.extern babelfish_starlet_syscall_handler_orig
-.extern babelfish_starlet_syscall_lr
+.extern syscall_handler_orig
+.extern syscall_lr
 .globl _start
-.globl babelfish_starlet_syscall_shim
+.globl syscall_shim
 .globl debug_output
 .globl dc_flush
 .globl irq_kill
@@ -141,7 +141,7 @@ done_bss:
 @ This code runs from Babelfish's relocated image, so it must compute
 @ the relocation delta from its own PC before touching C globals.
 @
-babelfish_starlet_syscall_shim:
+syscall_shim:
 	stmfd	sp!, {r0, r1}
 	adr	r12, .Lshim_here
 	ldr	r0, .Lshim_here_abs
@@ -159,9 +159,9 @@ babelfish_starlet_syscall_shim:
 .Lshim_here_abs:
 	.word	.Lshim_here
 .Lshim_lr_abs:
-	.word	babelfish_starlet_syscall_lr
+	.word	syscall_lr
 .Lshim_orig_abs:
-	.word	babelfish_starlet_syscall_handler_orig
+	.word	syscall_handler_orig
 
 debug_output:
 	@ load address of port
