@@ -21,10 +21,16 @@ void abort(void)
 
 	while (1)
 	{
+		// use some other (not-used-anywhere-else) fixed value for calling debug_output
 		debug_output(0x20);
-		delay(1000000);
+
+		// use some other (not-used-anywhere-else) fixed value for calling delay
+		delay(2000000);
+
 		debug_output(0);
-		delay(1000000);
+
+		// use some other (not-used-anywhere-else) fixed value for calling delay
+		delay(2000000);
 	}
 }
 
@@ -175,12 +181,15 @@ s32 printf (const char* str, ...)
 		/* Type is signed decimal */
 		if (c == 'd')
 			r = 10;
+
 		/* Type is unsigned decimal */
 		if (c == 'u')
 			r = 10;
+
 		/* Type is long decimal */
 		if (c == 'l')
 			r = 10;
+
 		/* Type is unsigned hexdecimal */
 		if (c == 'x')
 			r = 16;

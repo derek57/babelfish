@@ -203,6 +203,7 @@ static u32 sig_fwrite[] = {
 	0x7C9B2378, 0x7CDC3378, 0x7C7A1B78, 0x7CB92B78
 };
 #endif
+
 // keep track of how many times we think we patched the code
 //static u32 fwrite_count = 0;
 
@@ -280,6 +281,7 @@ enum context
 
 volatile u32 babelfish_starlet_syscall_lr = 0;
 u32 babelfish_starlet_syscall_handler_orig = 0;
+
 extern void babelfish_starlet_syscall_shim(void);
 
 static inline __attribute__((always_inline)) u32 bf_get_lr(void)
@@ -295,7 +297,7 @@ static inline __attribute__((always_inline)) u32 norm_pc(u32 pc)
 {
 	u32 current_pc = pc - 4;
 
-	current_pc &= ~1U;
+	current_pc &= ~1;
 
 	if ((current_pc >> 17) == 0x7ff0)
 		current_pc = (current_pc & 0x1ffff) | 0x0d400000;
@@ -668,7 +670,6 @@ void reload_ios_wrapper(u32 *buffer, u32 version)
 
 	dprintf("reload_ios(%x, %x)\n", (u32)buffer, version);
 
-	// XXX: WHAT ABOUT RESTORING THE IRQ COOKIE???
 	set32(HW_ARMIRQMASK, 0);
 
 	replace_ios_loader(buffer);
