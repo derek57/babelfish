@@ -2521,7 +2521,7 @@ s32 IOS_LaunchElf(const char *filename)
 	retval = ios_launchelf(filename);
 	irq_restore(cookie);
 	babelfish_print_context_tag(get_context_id_from_pc(bf_norm_pc(babelfish_starlet_syscall_lr - 4)));
-	printf("%s(%s)=%d\n", __FUNCTION__,filename,retval);
+	printf("%s(%s)=%d\n", __FUNCTION__, filename, retval);
 	return retval;
 }
 
@@ -2535,7 +2535,7 @@ s32 IOS_LaunchRM(const char *filename)
 	retval = ios_launchrm(filename);
 	irq_restore(cookie);
 	babelfish_print_context_tag(get_context_id_from_pc(bf_norm_pc(babelfish_starlet_syscall_lr - 4)));
-	printf("%s(%s)=%d\n", __FUNCTION__, filename,retval);
+	printf("%s(%s)=%d\n", __FUNCTION__, filename, retval);
 	return retval;
 }
 
@@ -2547,7 +2547,7 @@ s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
 	retval = ios_launchos(filename, r1, filesize);
 	irq_restore(cookie);
 	babelfish_print_context_tag(get_context_id_from_pc(bf_norm_pc(babelfish_starlet_syscall_lr - 4)));
-	printf("%s(%s, reset: %d, version: %d)=%d\n", __FUNCTION__, filename, r1, filesize,retval);
+	printf("%s(%s, reset: %d, version: %d)=%d\n", __FUNCTION__, filename, r1, filesize, retval);
 	return retval;
 }
 
