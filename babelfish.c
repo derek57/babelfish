@@ -595,15 +595,15 @@ void replace_ios_loader(u32 *buffer)
 	u32 cookie = irq_kill();
 	u32 *me = (u32 *)MEMHOLE_ADDR;
 
-	printf("new hdr length = %x\n", buffer[0]);
-	printf("new ELF offset = %x\n", buffer[1]);
-	printf("new ELF length = %x\n", buffer[2]);
-	printf("new param = %x\n", buffer[3]);
+	dprintf("new hdr length = %x\n", buffer[0]);
+	dprintf("new ELF offset = %x\n", buffer[1]);
+	dprintf("new ELF length = %x\n", buffer[2]);
+	dprintf("new param = %x\n", buffer[3]);
 
-	printf("our hdr length = %x\n", me[0]);
-	printf("our ELF offset = %x\n", me[1]);
-	printf("our ELF length = %x\n", me[2]);
-	printf("our param = %x\n", me[3]);
+	dprintf("our hdr length = %x\n", me[0]);
+	dprintf("our ELF offset = %x\n", me[1]);
+	dprintf("our ELF length = %x\n", me[2]);
+	dprintf("our param = %x\n", me[3]);
 
 	// problem:  when IOS is loaded from NAND, it's 3 parts: IOS header, ELF loader, ELF
 	// we want to overwrite the ELF loader with our own code, but it's probably bigger
@@ -664,14 +664,14 @@ void reload_ios_wrapper(u32 *buffer, u32 version)
 {
 	u32 cookie = irq_kill();
 
-	printf("reload_ios(%x, %x)\n", (u32)buffer, version);
+	dprintf("reload_ios(%x, %x)\n", (u32)buffer, version);
 
 	// XXX: WHAT ABOUT RESTORING THE IRQ COOKIE???
 	set32(HW_ARMIRQMASK, 0);
 
 	replace_ios_loader(buffer);
 
-	printf("Here goes nothing...\n");
+	dprintf("Here goes nothing...\n");
 
 	// magic pokes from reload_ios()
 	dc_flush();
@@ -690,7 +690,7 @@ void reload_ios_wrapper(u32 *buffer, u32 version)
 	jump_to_r0(buffer);
 
 	// should not be reached
-	printf("wtf am I here\n");
+	dprintf("wtf am I here\n");
 	irq_restore(cookie);
 	panic(0x14);
 }
@@ -996,14 +996,14 @@ void do_kernel_patches(u32 size)
 	// sanity check of the syscall vector table
 	if (kernel_mem32[1] != 0xe59ff018)
 	{
-		printf("ohnoes, unexpected offset to starlet_syscall_handler %x\n", kernel_mem32[1]);
+		dprintf("ohnoes, unexpected offset to starlet_syscall_handler %x\n", kernel_mem32[1]);
 		irq_restore(cookie);
 		return;
 	}
 
 	if (kernel_mem32[2] != 0xe59ff018)
 	{
-		printf("ohnoes, unexpected offset to arm_syscall_handler %x\n", kernel_mem32[2]);
+		dprintf("ohnoes, unexpected offset to arm_syscall_handler %x\n", kernel_mem32[2]);
 		irq_restore(cookie);
 		return;
 	}
@@ -2211,6 +2211,8 @@ printf("%s(buf: 0x%08x, len: %d)=%p\n", __FUNCTION__, (u32)iob, len, retval);
 	return retval;
 }
 
+// SPAM
+/*
 s32 IOS_IsValidIob(iosiobuf *iob)
 {
 	s32 retval;
@@ -2221,6 +2223,7 @@ s32 IOS_IsValidIob(iosiobuf *iob)
 printf("%s(%08x)=%d\n", __FUNCTION__, (u32)iob, retval);
 	return retval;
 }
+*/
 
 iosiobuf *IOS_CloneIob(iosiobuf *iob)
 {
@@ -2640,7 +2643,10 @@ void handle_syscall_table(u32 *syscall_table, u32 size)
 	ios_putiob = (void *)syscall_table[SYSCALL_PUTIOB];
 	ios_pushiob = (void *)syscall_table[SYSCALL_PUSHIOB];
 	ios_pulliob = (void *)syscall_table[SYSCALL_PULLIOB];
-	ios_validiob = (void *)syscall_table[SYSCALL_VALIDIOB];
+
+	// SPAM
+//	ios_validiob = (void *)syscall_table[SYSCALL_VALIDIOB];
+
 	ios_cloneiob = (void *)syscall_table[SYSCALL_CLONEIOB];
 
 	// SPAM
@@ -2754,7 +2760,10 @@ void handle_syscall_table(u32 *syscall_table, u32 size)
 	syscall_table[SYSCALL_PUTIOB] = (u32)IOS_PutIob;
 	syscall_table[SYSCALL_PUSHIOB] = (u32)IOS_PushIob;
 	syscall_table[SYSCALL_PULLIOB] = (u32)IOS_PullIob;
-	syscall_table[SYSCALL_VALIDIOB] = (u32)IOS_IsValidIob;
+
+	// SPAM
+//	syscall_table[SYSCALL_VALIDIOB] = (u32)IOS_IsValidIob;
+
 	syscall_table[SYSCALL_CLONEIOB] = (u32)IOS_CloneIob;
 
 	// SPAM

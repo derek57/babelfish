@@ -65,7 +65,7 @@ void sdmmc_abort(void)
 {
 	struct sdmmc_command cmd;
 
-	printf("abortion kthx\n");	
+	DPRINTF(0, "abortion kthx\n");	
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.c_opcode = MMC_STOP_TRANSMISSION;
 	cmd.c_arg = 0;
@@ -96,7 +96,7 @@ void sdmmc_needs_discover(void)
 
 	if (sdhc_bus_power(card.handle, 1) != 0)
 	{
-		printf("sdmmc: powerup failed for card\n");
+		DPRINTF(0, "sdmmc: powerup failed for card\n");
 		goto out;
 	}
 
@@ -104,7 +104,7 @@ void sdmmc_needs_discover(void)
 
 	if (sdhc_bus_clock(card.handle, SDMMC_DEFAULT_CLOCK) != 0)
 	{
-		printf("sdmmc: could not enable clock for card\n");
+		DPRINTF(0, "sdmmc: could not enable clock for card\n");
 		goto out_power;
 	}
 
@@ -116,7 +116,7 @@ void sdmmc_needs_discover(void)
 
 	if (cmd.c_error)
 	{
-		printf("sdmmc: GO_IDLE_STATE failed with %d\n", cmd.c_error);
+		DPRINTF(0, "sdmmc: GO_IDLE_STATE failed with %d\n", cmd.c_error);
 		goto out_clock;
 	}
 
@@ -168,7 +168,7 @@ void sdmmc_needs_discover(void)
 
 	if (!ISSET(cmd.c_resp[0], MMC_OCR_MEM_READY))
 	{
-		printf("sdmmc: card failed to powerup.\n");
+		DPRINTF(0, "sdmmc: card failed to powerup.\n");
 		goto out_power;
 	}
 
@@ -187,7 +187,7 @@ void sdmmc_needs_discover(void)
 
 	if (cmd.c_error)
 	{
-		printf("sdmmc: MMC_ALL_SEND_CID failed with %d\n", cmd.c_error);
+		DPRINTF(0, "sdmmc: MMC_ALL_SEND_CID failed with %d\n", cmd.c_error);
 		goto out_clock;
 	}
 
@@ -207,7 +207,7 @@ void sdmmc_needs_discover(void)
 
 	if (cmd.c_error)
 	{
-		printf("sdmmc: SD_SEND_RCA failed with %d\n", cmd.c_error);
+		DPRINTF(0, "sdmmc: SD_SEND_RCA failed with %d\n", cmd.c_error);
 		goto out_clock;
 	}
 
@@ -223,7 +223,7 @@ void sdmmc_needs_discover(void)
 
 	if (cmd.c_error)
 	{
-		printf("sdmmc: MMC_SEND_CSD failed with %d\n", cmd.c_error);
+		DPRINTF(0, "sdmmc: MMC_SEND_CSD failed with %d\n", cmd.c_error);
 		goto out_power;
 	}
 
@@ -241,7 +241,7 @@ void sdmmc_needs_discover(void)
 	{
 		unsigned int c_size = resp[7] << 16 | resp[6] << 8 | resp[5];
 
-		printf("sdmmc: sdhc mode, c_size=%u, card size = %uk\n", c_size, (c_size + 1) * 512);
+		DPRINTF(0, "sdmmc: sdhc mode, c_size=%u, card size = %uk\n", c_size, (c_size + 1) * 512);
 
 		// spec says read timeout is 100ms and write/erase timeout is 250ms
 		card.timeout = 250 * 1000000;
@@ -289,7 +289,7 @@ void sdmmc_needs_discover(void)
 
 	if (cmd.c_error)
 	{
-		printf("sdmmc: MMC_SET_BLOCKLEN failed with %d\n", cmd.c_error);
+		DPRINTF(0, "sdmmc: MMC_SET_BLOCKLEN failed with %d\n", cmd.c_error);
 		card.inserted = card.selected = 0;
 		goto out_clock;
 	}
@@ -323,11 +323,11 @@ int sdmmc_select(void)
 	DPRINTF(0, "%s: resp=%x\n", __FUNCTION__, MMC_R1(cmd.c_resp));
 //	sdhc_dump_regs(card.handle);
 
-//	printf("present state = %x\n", HREAD4(hp, SDHC_PRESENT_STATE));
+//	DPRINTF(0, "present state = %x\n", HREAD4(hp, SDHC_PRESENT_STATE));
 
 	if (cmd.c_error)
 	{
-		printf("sdmmc: MMC_SELECT card failed with %d.\n", cmd.c_error);
+		DPRINTF(0, "sdmmc: MMC_SELECT card failed with %d.\n", cmd.c_error);
 		return -1;
 	}
 
@@ -361,11 +361,11 @@ int sdmmc_read(u32 blk_start, u32 blk_count, void *data)
 {
 	struct sdmmc_command cmd;
 
-//	printf("%s(%u, %u, %p)\n", __FUNCTION__, blk_start, blk_count, data);
+//	DPRINTF(0, "%s(%u, %u, %p)\n", __FUNCTION__, blk_start, blk_count, data);
 
 	if (card.inserted == 0)
 	{
-		printf("sdmmc: READ: no card inserted.\n");
+		DPRINTF(0, "sdmmc: READ: no card inserted.\n");
 		return -1;
 	}
 
@@ -373,14 +373,14 @@ int sdmmc_read(u32 blk_start, u32 blk_count, void *data)
 	{
 		if (sdmmc_select() < 0)
 		{
-			printf("sdmmc: READ: cannot select card.\n");
+			DPRINTF(0, "sdmmc: READ: cannot select card.\n");
 			return -1;
 		}
 	}
 
 	if (card.new_card == 1)
 	{
-		printf("sdmmc: new card inserted but not acknowledged yet.\n");
+		DPRINTF(0, "sdmmc: new card inserted but not acknowledged yet.\n");
 		return -1;
 	}
 
@@ -401,7 +401,7 @@ int sdmmc_read(u32 blk_start, u32 blk_count, void *data)
 
 	if (cmd.c_error)
 	{
-		printf("sdmmc: MMC_READ_BLOCK_MULTIPLE failed with %d\n", cmd.c_error);
+		DPRINTF(0, "sdmmc: MMC_READ_BLOCK_MULTIPLE failed with %d\n", cmd.c_error);
 		return -1;
 	}
 
@@ -417,7 +417,7 @@ int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
 
 	if (card.inserted == 0)
 	{
-		printf("sdmmc: READ: no card inserted.\n");
+		DPRINTF(0, "sdmmc: READ: no card inserted.\n");
 		return -1;
 	}
 
@@ -425,14 +425,14 @@ int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
 	{
 		if (sdmmc_select() < 0)
 		{
-			printf("sdmmc: READ: cannot select card.\n");
+			DPRINTF(0, "sdmmc: READ: cannot select card.\n");
 			return -1;
 		}
 	}
 
 	if (card.new_card == 1)
 	{
-		printf("sdmmc: new card inserted but not acknowledged yet.\n");
+		DPRINTF(0, "sdmmc: new card inserted but not acknowledged yet.\n");
 		return -1;
 	}
 
@@ -453,7 +453,7 @@ int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
 
 	if (cmd.c_error)
 	{
-		printf("sdmmc: MMC_READ_BLOCK_MULTIPLE failed with %d\n", cmd.c_error);
+		DPRINTF(0, "sdmmc: MMC_READ_BLOCK_MULTIPLE failed with %d\n", cmd.c_error);
 		return -1;
 	}
 
@@ -466,13 +466,13 @@ int sdmmc_get_sectors(void)
 {
 	if (card.inserted == 0)
 	{
-		printf("sdmmc: READ: no card inserted.\n");
+		DPRINTF(0, "sdmmc: READ: no card inserted.\n");
 		return -1;
 	}
 
 	if (card.new_card == 1)
 	{
-		printf("sdmmc: new card inserted but not acknowledged yet.\n");
+		DPRINTF(0, "sdmmc: new card inserted but not acknowledged yet.\n");
 		return -1;
 	}
 
