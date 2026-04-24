@@ -206,7 +206,7 @@ s32 printf (const char* str, ...)
 
 		// Pointer (%p) case
 		if (c == 'p')
-			val = (u32)(void *)va_arg(arp, void *);
+			val = (u32)(unsigned long)va_arg(arp, void *);
 		// Long (%l) case
 		else if (c == 'l')
 			val = (u32)(long)va_arg(arp, int);
