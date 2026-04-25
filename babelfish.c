@@ -25,6 +25,12 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 
 #define PRINT_RETVAL			0
 
+// That one will not print the exception output of IOS once a shutdown ("POWER-OFF") is issued...
+//#define SEARCH_RANGE			0x2000
+
+// ...but we may need it anyway.
+#define SEARCH_RANGE			0x4000
+
 
 // Known issues:
 // MEMHOLE_ADDR was picked by looking at the ELF headers for a few versions of IOS
@@ -47,7 +53,7 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 // CONFIG OPTIONS
 
 // as opposed to hooking xchange_osvers -- only works on newer versions of IOS?
-#define USE_RELOAD_IOS			1
+#define USE_RELOAD_IOS			0
 
 // XXX this shouldn't be hardcoded, and if you change it it must also change in start.S and babelfish.ld!
 // This is where we save a copy of ourselves to use when we reload into a new IOS
@@ -819,7 +825,7 @@ u32 *find_ppcreset(void)
 	u32 magic[] = { 0x0d800034, 0x0d800194 };
 	u32 *kernel = (u32 *)0xFFFF0000;
 
-	for (i = 0; i < (0x10000 / 4); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if ((kernel[i] == magic[0]) && (kernel[i + 1] == magic[1]))
 		{
@@ -847,7 +853,7 @@ void find_powerpc_reset(void)
 
 	dprintf("Looking for powerpc_reset magic\n\n");
 
-	for (i = 0; i < (0x10000 / 4); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if ((kernel[i] == magic[0]) && (kernel[i + 1] == magic[1]))
 		{
@@ -856,7 +862,7 @@ void find_powerpc_reset(void)
 		}
 	}
 
-	if (i == (0x10000 / 4))
+	if (i == 0x4000)
 	{
 		dprintf("Couldn't find powerpc_reset magic\n");
 		return;
@@ -879,7 +885,7 @@ void find_powerpc_reset(void)
 
 	powerpc_reset = (void *)(0xFFFF0000 + (i * 4) + 1);
 
-	for (i = 0; i < (0x10000 / 4); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if (kernel[i] == (u32)powerpc_reset)
 		{
@@ -913,7 +919,7 @@ u32 *find_reload_ios(void)
 
 	dprintf("Looking for reload_ios\n");
 
-	for (i = 0; i < (0x10000 / 4); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if ((kernel[i] == magic[0]) && (kernel[i + 1] == magic[1]))
 		{
@@ -956,7 +962,7 @@ u32 *find_xchange_osvers(void)
 
 	dprintf("Looking for xchange_osvers\n");
 
-	for (i = 0; i < (0x10000 / 4); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if (kernel[i] == magic[0])
 		{
@@ -1021,7 +1027,7 @@ void do_kernel_patches(u32 size)
 	// functions to call over SVC handlers which we can just blow away. thanks ninty
 
 	// scan from 0xFFFF0000 ... 0xFFFFFFFF looking for SVC 05 instruction
-	for (i = 0; i < (0x10000 / 2); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if ((kernel_mem16[i + 0] == 0x4672) && (kernel_mem16[i + 1] == 0x1c01) && (kernel_mem16[i + 2] == 0x2005))
 		{
@@ -1561,7 +1567,7 @@ s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
-
+#if 0
 	// gross hack -- on later modular IOSes, we can't patch KD when it's loaded
 	// because only the kernel gets loaded by our ELF loader/patcher -- so instead,
 	// we wait until the module is actually started to do our patch
@@ -1569,7 +1575,7 @@ s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32
 	{
 		do_kd_patch((u8 *)0x13db0000, 0x57000);
 	}
-
+#endif
 	retval = ios_createthread(entry, arg, stack, stacksize, prio, attr);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
@@ -3192,7 +3198,7 @@ void *find_stuff_EXI_stub(void)
 
 	dprintf("Looking for ppc_stub1\n\n");
 
-	for (i = 0; i < (0x10000 / 4); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if ((kernel[i] == magic[0]) && (kernel[i + 1] == magic[1]))
 		{
@@ -3201,7 +3207,7 @@ void *find_stuff_EXI_stub(void)
 		}
 	}
 
-	if (i == (0x10000 / 4))
+	if (i == 0x4000)
 	{
 		dprintf("Couldn't find ppc_stub1\n");
 		return NULL;
@@ -3209,7 +3215,7 @@ void *find_stuff_EXI_stub(void)
 
 	ppc_stub1_addr = 0xFFFF0000 + (i * 4);
 
-	for (i = 0; i < (0x10000 / 4); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if (kernel[i] == ppc_stub1_addr)
 		{
@@ -3218,7 +3224,7 @@ void *find_stuff_EXI_stub(void)
 		}
 	}
 
-	if (i == (0x10000 / 4))
+	if (i == 0x4000)
 	{
 		dprintf("Couldn't find ppc_stub ref\n");
 		return NULL;
@@ -3242,7 +3248,7 @@ void *find_stuff_EXI_stub(void)
 	// thumb offset
 	stuff_EXI_stub = (void *)(0xFFFF0000 + (i * 4) + 1);
 
-	for (i = 0; i < (0x10000 / 4); i++)
+	for (i = 0; i < SEARCH_RANGE; i++)
 	{
 		if (kernel[i] == (u32)stuff_EXI_stub)
 		{
