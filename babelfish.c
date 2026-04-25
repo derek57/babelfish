@@ -167,40 +167,26 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 
 // This is a patch to __fwrite in the Nintendo SDK to redirect all output to USBGecko
 static u32 fwrite_patch[] = {
-	0x9421ffd0, 0x7c0802a6, 0x90010034, 0xbf210014,
-	0x7c9b2378, 0x7cdc3378, 0x7C7A1B78, 0x7CB92B78,
-	0x38800000, 0x7F83E378, 0x4800B2A9, 0x2C030000,
-	0x40820010, 0x7F83E378, 0x3880FFFF, 0x4800B295,
-	0x7FDBC9D7, 0x4182001C, 0x881C000A, 0x2C000000,
-	0x40820010, 0x801C0004, 0x5400577F, 0x4082000C,
-	0x38600000, 0x48000290, 0x28000002, 0x40820008,
-	0x48000FDD, 0x807C0004, 0x3BE00001, 0x38800000,
-	0x54606FFF, 0x41820010, 0x54603FBE, 0x28000002,
-	0x7C8521D7, 0x40810084, 0x3CE0CD00, 0x3D40CD00,
-	0x3D60CD00, 0x60E76814, 0x614A6824, 0x616B6820,
-	0x38C00000, 0x7C0618AE, 0x5400A016, 0x6408B000,
-	0x380000D0, 0x90070000, 0x7C0006AC, 0x910A0000,
-	0x7C0006AC, 0x38000019, 0x900B0000, 0x7C0006AC,
-	0x800B0000, 0x7C0004AC, 0x70090001, 0x4082FFF4,
-	0x800A0000, 0x7C0004AC, 0x39200000, 0x91270000,
-	0x7C0006AC, 0x74090400, 0x4182FFB8, 0x38C60001,
-	0x7F862000, 0x409EFFA0, 0x7CA32B78, 0x4E800020
+	0x9421ffd0, 0x7c0802a6, 0x90010034, 0xbf210014, 0x7c9b2378, 0x7cdc3378, 0x7C7A1B78, 0x7CB92B78,
+	0x38800000, 0x7F83E378, 0x4800B2A9, 0x2C030000, 0x40820010, 0x7F83E378, 0x3880FFFF, 0x4800B295,
+	0x7FDBC9D7, 0x4182001C, 0x881C000A, 0x2C000000, 0x40820010, 0x801C0004, 0x5400577F, 0x4082000C,
+	0x38600000, 0x48000290, 0x28000002, 0x40820008, 0x48000FDD, 0x807C0004, 0x3BE00001, 0x38800000,
+	0x54606FFF, 0x41820010, 0x54603FBE, 0x28000002, 0x7C8521D7, 0x40810084, 0x3CE0CD00, 0x3D40CD00,
+	0x3D60CD00, 0x60E76814, 0x614A6824, 0x616B6820, 0x38C00000, 0x7C0618AE, 0x5400A016, 0x6408B000,
+	0x380000D0, 0x90070000, 0x7C0006AC, 0x910A0000, 0x7C0006AC, 0x38000019, 0x900B0000, 0x7C0006AC,
+	0x800B0000, 0x7C0004AC, 0x70090001, 0x4082FFF4, 0x800A0000, 0x7C0004AC, 0x39200000, 0x91270000,
+	0x7C0006AC, 0x74090400, 0x4182FFB8, 0x38C60001, 0x7F862000, 0x409EFFA0, 0x7CA32B78, 0x4E800020
 /*
-	0x7c8429d6, 0x39400000, 0x9421fff0, 0x93e1000c,
-	0x7f8a2000, 0x409c0064, 0x3d00cd00, 0x3d60cd00,
-	0x3d20cd00, 0x61086814, 0x616b6824, 0x61296820,
-	0x398000d0, 0x38c00019, 0x38e00000, 0x91880000,
-	0x7c0350ae, 0x5400a016, 0x6400b000, 0x900b0000,
-	0x90c90000, 0x80090000, 0x701f0001, 0x4082fff8,
-	0x800b0000, 0x90e80000, 0x540037fe, 0x7d4a0214,
-	0x7f8a2000, 0x419cffc8, 0x7ca32b78, 0x83e1000c,
+	0x7c8429d6, 0x39400000, 0x9421fff0, 0x93e1000c, 0x7f8a2000, 0x409c0064, 0x3d00cd00, 0x3d60cd00,
+	0x3d20cd00, 0x61086814, 0x616b6824, 0x61296820, 0x398000d0, 0x38c00019, 0x38e00000, 0x91880000,
+	0x7c0350ae, 0x5400a016, 0x6400b000, 0x900b0000, 0x90c90000, 0x80090000, 0x701f0001, 0x4082fff8,
+	0x800b0000, 0x90e80000, 0x540037fe, 0x7d4a0214, 0x7f8a2000, 0x419cffc8, 0x7ca32b78, 0x83e1000c,
 	0x38210010, 0x4e800020
 */
 };
 
 static u32 sig_fwrite[] = {
-	0x9421FFD0, 0x7C0802A6, 0x90010034, 0xBF210014,
-	0x7C9B2378, 0x7CDC3378, 0x7C7A1B78, 0x7CB92B78
+	0x9421FFD0, 0x7C0802A6, 0x90010034, 0xBF210014, 0x7C9B2378, 0x7CDC3378, 0x7C7A1B78, 0x7CB92B78
 };
 #endif
 
@@ -1304,8 +1290,11 @@ ios_sendmessage_func ios_sendmessage = NULL;
 typedef s32(*ios_jammessage_func)(s32, s32, u32);
 ios_jammessage_func ios_jammessage = NULL;
 
+// SPAM
+#if 0
 typedef s32(*ios_rcvmessage_func)(s32, s32 *, u32);
 ios_rcvmessage_func ios_rcvmessage = NULL;
+#endif
 
 typedef s32(*ios_handleev_func)(u32, s32, s32);
 ios_handleev_func ios_handleev = NULL;
@@ -1352,8 +1341,11 @@ ios_open_func ios_open = NULL;
 typedef s32(*ios_close_func)(s32);
 ios_close_func ios_close = NULL;
 
+// SPAM
+#if 0
 typedef s32(*ios_read_func)(s32, void *, u32);
 ios_read_func ios_read = NULL;
+#endif
 
 typedef s32(*ios_write_func)(s32, void *, u32);
 ios_write_func ios_write = NULL;
@@ -1388,8 +1380,11 @@ ios_ioctlasync_func ios_ioctlasync = NULL;
 typedef s32(*ios_ioctlvasync_func)(s32, s32, u32, u32, iovec *, s32, ioresreq *);
 ios_ioctlvasync_func ios_ioctlvasync = NULL;
 
+// SPAM
+#if 0
 typedef s32(*ios_resourcereply_func)(ioresreq *, s32);
 ios_resourcereply_func ios_resourcereply = NULL;
+#endif
 
 typedef s32(*ios_setuid_func)(s32, u32);
 ios_setuid_func ios_setuid = NULL;
@@ -1403,11 +1398,17 @@ ios_setgid_func ios_setgid = NULL;
 typedef u16(*ios_getgid_func)(void);
 ios_getgid_func ios_getgid = NULL;
 
+// SPAM
+#if 0
 typedef void(*ios_flushmem_func)(s32);
 ios_flushmem_func ios_flushmem = NULL;
+#endif
 
+// SPAM
+#if 0
 typedef void(*ios_invalrdb_func)(s32);
 ios_invalrdb_func ios_invalrdb = NULL;
+#endif
 
 typedef s32(*ios_clrenipciopintr_func)(void);
 ios_clrenipciopintr_func ios_clrenipciopintr = NULL;
@@ -1445,17 +1446,32 @@ ios_pushiob_func ios_pushiob = NULL;
 typedef u8 *(*ios_pulliob_func)(iosiobuf *, u16);
 ios_pulliob_func ios_pulliob = NULL;
 
+// SPAM
+#if 0
 typedef s32(*ios_validiob_func)(iosiobuf *);
 ios_validiob_func ios_validiob = NULL;
+#endif
 
 typedef iosiobuf *(*ios_cloneiob_func)(iosiobuf *);
 ios_cloneiob_func ios_cloneiob = NULL;
 
+// SPAM
+#if 0
 typedef void(*ios_invaldcache_func)(void *, u32);
 ios_invaldcache_func ios_invaldcache = NULL;
+#endif
 
+// SPAM
+#if 0
 typedef void(*ios_flushdcache_func)(void *, u32);
 ios_flushdcache_func ios_flushdcache = NULL;
+#endif
+
+typedef s32(*ios_launchelf_func)(const char *);
+ios_launchelf_func ios_launchelf = NULL;
+
+typedef s32(*ios_launchos_func)(const char *, int, u32);
+ios_launchos_func ios_launchos = NULL;
 
 typedef void(*ios_launchosfrommem_func)(u32, u32);
 ios_launchosfrommem_func ios_launchosfrommem = NULL;
@@ -1493,8 +1509,11 @@ ios_getlomemosver_func ios_getlomemosver = NULL;
 typedef s32(*ios_setdispinup_func)(u32);
 ios_setdispinup_func ios_setdispinup = NULL;
 
+// SPAM
+#if 0
 typedef void *(*ios_vtop_func)(void *);
 ios_vtop_func ios_vtop = NULL;
+#endif
 
 typedef s32(*ios_setdvdrddis_func)(u8);
 ios_setdvdrddis_func ios_setdvdrddis = NULL;
@@ -1514,11 +1533,17 @@ ios_setppcacrperms_func ios_setppcacrperms = NULL;
 typedef u32(*ios_getcoreclk_func)(void);
 ios_getcoreclk_func ios_getcoreclk = NULL;
 
+// SPAM
+#if 0
 typedef s32(*ios_acrregwr_func)(u32, u32);
 ios_acrregwr_func ios_acrregwr = NULL;
+#endif
 
+// SPAM
+#if 0
 typedef s32(*ios_ddrregwr_func)(u32, u32);
 ios_ddrregwr_func ios_ddrregwr = NULL;
+#endif
 
 typedef void(*ios_outputled_func)(u8);
 ios_outputled_func ios_outputled = NULL;
@@ -1526,14 +1551,8 @@ ios_outputled_func ios_outputled = NULL;
 typedef s32(*ios_setipcaccrights_func)(u8 *);
 ios_setipcaccrights_func ios_setipcaccrights = NULL;
 
-typedef s32(*ios_launchelf_func)(const char *);
-ios_launchelf_func ios_launchelf = NULL;
-
 typedef s32(*ios_launchrm_func)(const char *);
 ios_launchrm_func ios_launchrm = NULL;
-
-typedef s32(*ios_launchos_func)(const char *, int, u32);
-ios_launchos_func ios_launchos = NULL;
 
 // wrapper functions for hooked syscalls
 s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32 prio, u32 attr)
@@ -1878,6 +1897,8 @@ s32 IOS_Close(s32 fd)
 	return retval;
 }
 
+// SPAM
+#if 0
 s32 IOS_Read(s32 fd, void *buf, u32 count)
 {
 	s32 retval;
@@ -1888,6 +1909,7 @@ s32 IOS_Read(s32 fd, void *buf, u32 count)
 	printf("%s(%d, 0x%08x, 0x%x)=%d\n", __FUNCTION__, fd, (u32)buf, count, retval);
 	return retval;
 }
+#endif
 
 s32 IOS_Write(s32 fd, void *buf, u32 count)
 {
@@ -2010,6 +2032,8 @@ s32 IOS_IoctlvAsync(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec, s32 id, 
 	return retval;
 }
 
+// SPAM
+#if 0
 s32 IOS_ResourceReply(ioresreq *reply, s32 status)
 {
 	s32 retval;
@@ -2020,6 +2044,7 @@ s32 IOS_ResourceReply(ioresreq *reply, s32 status)
 	printf("%s(0x%08x, 0x%x)=%d\n", __FUNCTION__, (u32)reply, status, retval);
 	return retval;
 }
+#endif
 
 s32 IOS_SetUid(s32 id, u32 uid)
 {
@@ -2265,6 +2290,30 @@ void IOS_FlushDCache(void *ptr, u32 size)
 	printf("%s(0x%08x, 0x%x)\n", __FUNCTION__, ptr, size);
 }
 #endif
+
+// it would be nice to figure out how to do patching of the loaded PPC content here
+s32 IOS_LaunchElf(const char *filename)
+{
+	s32 retval;
+	/*u32 cookie =*/ irq_kill();
+	retval = ios_launchelf(filename);
+	//irq_restore(cookie);
+	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+	printf("%s(%s)=%d\n", __FUNCTION__, filename, retval);
+	return retval;
+}
+
+// mostly just for logging at this point, but maybe would be better to do patches here?
+s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
+{
+	s32 retval;
+	/*u32 cookie =*/ irq_kill();
+	retval = ios_launchos(filename, r1, filesize);
+	//irq_restore(cookie);
+	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+	printf("%s(%s, reset: %d, version: %d)=%d\n", __FUNCTION__, filename, r1, filesize, retval);
+	return retval;
+}
 
 void IOS_LaunchOSFromMemory(u32 addr, u32 ver)
 {
@@ -2518,18 +2567,6 @@ s32 IOS_SetIpcAccessRights(u8 *rights)
 	return retval;
 }
 
-// it would be nice to figure out how to do patching of the loaded PPC content here
-s32 IOS_LaunchElf(const char *filename)
-{
-	s32 retval;
-	/*u32 cookie =*/ irq_kill();
-	retval = ios_launchelf(filename);
-	//irq_restore(cookie);
-	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
-	printf("%s(%s)=%d\n", __FUNCTION__, filename, retval);
-	return retval;
-}
-
 // This is called by modular IOS's kernel to load each module from NAND -- could probably
 // do patching here instead of in ios_createthread, but you have to figure out whether or not
 // this is the right module to patch somehow
@@ -2541,18 +2578,6 @@ s32 IOS_LaunchRM(const char *filename)
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
 	printf("%s(%s)=%d\n", __FUNCTION__, filename, retval);
-	return retval;
-}
-
-// mostly just for logging at this point, but maybe would be better to do patches here?
-s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
-{
-	s32 retval;
-	/*u32 cookie =*/ irq_kill();
-	retval = ios_launchos(filename, r1, filesize);
-	//irq_restore(cookie);
-	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
-	printf("%s(%s, reset: %d, version: %d)=%d\n", __FUNCTION__, filename, r1, filesize, retval);
 	return retval;
 }
 
@@ -2613,7 +2638,10 @@ void handle_syscall_table(u32 *syscall_table, u32 size)
 	ios_registerrm = (void *)syscall_table[SYSCALL_REGISTER_RM];
 	ios_open = (void *)syscall_table[SYSCALL_OPEN];
 	ios_close = (void *)syscall_table[SYSCALL_CLOSE];
-	ios_read = (void *)syscall_table[SYSCALL_READ];
+
+	// SPAM
+//	ios_read = (void *)syscall_table[SYSCALL_READ];
+
 	ios_write = (void *)syscall_table[SYSCALL_WRITE];
 	ios_seek = (void *)syscall_table[SYSCALL_SEEK];
 	ios_ioctl = (void *)syscall_table[SYSCALL_IOCTL];
@@ -2625,7 +2653,10 @@ void handle_syscall_table(u32 *syscall_table, u32 size)
 	ios_seekasync = (void *)syscall_table[SYSCALL_SEEK_ASYNC];
 	ios_ioctlasync = (void *)syscall_table[SYSCALL_IOCTL_ASYNC];
 	ios_ioctlvasync = (void *)syscall_table[SYSCALL_IOCTLV_ASYNC];
-	ios_resourcereply = (void *)syscall_table[SYSCALL_RESOURCEREPLY];
+
+	// SPAM
+//	ios_resourcereply = (void *)syscall_table[SYSCALL_RESOURCEREPLY];
+
 	ios_setuid = (void *)syscall_table[SYSCALL_SET_UID];
 	ios_getuid = (void *)syscall_table[SYSCALL_GET_UID];
 	ios_setgid = (void *)syscall_table[SYSCALL_SET_GID];
@@ -2730,7 +2761,10 @@ void handle_syscall_table(u32 *syscall_table, u32 size)
 	syscall_table[SYSCALL_REGISTER_RM] = (u32)IOS_RegisterResourceManager;
 	syscall_table[SYSCALL_OPEN] = (u32)IOS_Open;
 	syscall_table[SYSCALL_CLOSE] = (u32)IOS_Close;
-	syscall_table[SYSCALL_READ] = (u32)IOS_Read;
+
+	// SPAM
+//	syscall_table[SYSCALL_READ] = (u32)IOS_Read;
+
 	syscall_table[SYSCALL_WRITE] = (u32)IOS_Write;
 	syscall_table[SYSCALL_SEEK] = (u32)IOS_Seek;
 	syscall_table[SYSCALL_IOCTL] = (u32)IOS_Ioctl;
@@ -2742,7 +2776,10 @@ void handle_syscall_table(u32 *syscall_table, u32 size)
 	syscall_table[SYSCALL_SEEK_ASYNC] = (u32)IOS_SeekAsync;
 	syscall_table[SYSCALL_IOCTL_ASYNC] = (u32)IOS_IoctlAsync;
 	syscall_table[SYSCALL_IOCTLV_ASYNC] = (u32)IOS_IoctlvAsync;
-	syscall_table[SYSCALL_RESOURCEREPLY] = (u32)IOS_ResourceReply;
+
+	// SPAM
+//	syscall_table[SYSCALL_RESOURCEREPLY] = (u32)IOS_ResourceReply;
+
 	syscall_table[SYSCALL_SET_UID] = (u32)IOS_SetUid;
 	syscall_table[SYSCALL_GET_UID] = (u32)IOS_GetUid;
 	syscall_table[SYSCALL_SET_GID] = (u32)IOS_SetGid;
