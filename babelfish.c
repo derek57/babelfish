@@ -23,6 +23,8 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 
 #define DEBUG				0
 
+#define PRINT_RETVAL			0
+
 
 // Known issues:
 // MEMHOLE_ADDR was picked by looking at the ELF headers for a few versions of IOS
@@ -1571,7 +1573,11 @@ s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32
 	retval = ios_createthread(entry, arg, stack, stacksize, prio, attr);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(0x%08x, 0x%x, 0x%08x, stacksize: 0x%x, prio: 0x%x, attr: 0x%x)=%d\n", __FUNCTION__, (u32)entry, (u32)arg, (u32)stack, stacksize, prio, attr, retval);
+#else
+	printf("%s(0x%08x, 0x%x, 0x%08x, stacksize: 0x%x, prio: 0x%x, attr: 0x%x)\n", __FUNCTION__, (u32)entry, (u32)arg, (u32)stack, stacksize, prio, attr);
+#endif
 	return retval;
 }
 
@@ -1582,7 +1588,11 @@ s32 IOS_JoinThread(u32 id, void **arg)
 	retval = ios_jointhread(id, arg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(id: 0x%08x, val: 0x%08x)=%d\n", __FUNCTION__, id, (u32)arg, retval);
+#else
+	printf("%s(id: 0x%08x, val: 0x%08x)\n", __FUNCTION__, id, (u32)arg);
+#endif
 	return retval;
 }
 
@@ -1593,7 +1603,11 @@ s32 IOS_DestroyThread(u32 id, void *arg)
 	retval = ios_destroythread(id, arg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, %d)=%d\n", __FUNCTION__, id, (u32)arg, retval);
+#else
+	printf("%s(%d, %d)\n", __FUNCTION__, id, (u32)arg);
+#endif
 	return retval;
 }
 
@@ -1604,7 +1618,11 @@ s32 IOS_GetThreadId(void)
 	retval = ios_getthreadid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -1615,7 +1633,11 @@ s32 IOS_GetProcessId(void)
 	retval = ios_getprocessid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -1626,7 +1648,11 @@ s32 IOS_StartThread(s32 id)
 	retval = ios_startthread(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, id, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, id);
+#endif
 	return retval;
 }
 
@@ -1637,7 +1663,11 @@ s32 IOS_StopThread(s32 id)
 	retval = ios_stopthread(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(id: 0x%08x)=%d\n", __FUNCTION__, id, retval);
+#else
+	printf("%s(id: 0x%08x)\n", __FUNCTION__, id);
+#endif
 	return retval;
 }
 
@@ -1657,7 +1687,11 @@ s32 IOS_GetThreadPriority(s32 id)
 	retval = ios_getthreadprio(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(id: %d)=%d\n", __FUNCTION__, id, retval);
+#else
+	printf("%s(id: %d)\n", __FUNCTION__, id);
+#endif
 	return retval;
 }
 
@@ -1668,7 +1702,11 @@ s32 IOS_SetThreadPriority(s32 id, u32 prio)
 	retval = ios_setthreadprio(id, prio);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(id: %d, prio: %d)=%d\n", __FUNCTION__, id, prio, retval);
+#else
+	printf("%s(id: %d, prio: %d)\n", __FUNCTION__, id, prio);
+#endif
 	return retval;
 }
 
@@ -1679,7 +1717,11 @@ s32 IOS_CreateMessageQueue(s32 *msg, u32 size)
 	retval = ios_createmessagequeue(msg, size);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(0x%08x, cnt: %d)=%d\n", __FUNCTION__, (u32)msg, size, retval);
+#else
+	printf("%s(0x%08x, cnt: %d)\n", __FUNCTION__, (u32)msg, size);
+#endif
 	return retval;
 }
 
@@ -1690,7 +1732,11 @@ s32 IOS_DestroyMessageQueue(s32 id)
 	retval = ios_destroymessagequeue(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(id: %d)=%d\n", __FUNCTION__, id, retval);
+#else
+	printf("%s(id: %d)\n", __FUNCTION__, id);
+#endif
 	return retval;
 }
 
@@ -1701,7 +1747,11 @@ s32 IOS_SendMessage(s32 id, s32 msg, u32 flag)
 	retval = ios_sendmessage(id, msg, flag);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(0x%08x, %08x, flag: %08x)=%d\n", __FUNCTION__, id, msg, flag, retval);
+#else
+	printf("%s(0x%08x, %08x, flag: %08x)\n", __FUNCTION__, id, msg, flag);
+#endif
 	return retval;
 }
 
@@ -1712,7 +1762,11 @@ s32 IOS_JamMessage(s32 id, s32 msg, u32 flag)
 	retval = ios_jammessage(id, msg, flag);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(0x%08x, %d, flag: %d)=%d\n", __FUNCTION__, id, msg, flag, retval);
+#else
+	printf("%s(0x%08x, %d, flag: %d)\n", __FUNCTION__, id, msg, flag);
+#endif
 	return retval;
 }
 
@@ -1725,7 +1779,11 @@ s32 IOS_ReceiveMessage(s32 id, s32 *msg, u32 flag)
 	retval = ios_rcvmessage(id, msg, flag);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%08x, %d)=%d\n", __FUNCTION__, id, msg, flag, retval);
+#else
+	printf("%s(%d, 0x%08x, %d)\n", __FUNCTION__, id, msg, flag);
+#endif
 	return retval;
 }
 #endif
@@ -1737,7 +1795,11 @@ s32 IOS_HandleEvent(u32 ev, s32 id, s32 msg)
 	retval = ios_handleev(ev, id, msg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, %d, 0x%08x)=%d\n", __FUNCTION__, ev, id, msg, retval);
+#else
+	printf("%s(%d, %d, 0x%08x)\n", __FUNCTION__, ev, id, msg);
+#endif
 	return retval;
 }
 
@@ -1748,7 +1810,11 @@ s32 IOS_UnhandleEvent(u32 ev)
 	retval = ios_unhandleev(ev);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(evt: %d)=%d\n", __FUNCTION__, ev, retval);
+#else
+	printf("%s(evt: %d)\n", __FUNCTION__, ev);
+#endif
 	return retval;
 }
 
@@ -1759,7 +1825,11 @@ s32 IOS_CreateTimer(u32 val, u32 interval, s32 mqid, s32 msg)
 	retval = ios_createtimer(val, interval, mqid, msg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, %d, %d, 0x%08x)=%d\n", __FUNCTION__, val, interval, mqid, msg, retval);
+#else
+	printf("%s(%d, %d, %d, 0x%08x)\n", __FUNCTION__, val, interval, mqid, msg);
+#endif
 	return retval;
 }
 
@@ -1770,7 +1840,11 @@ s32 IOS_RestartTimer(s32 id, u32 val, u32 interval)
 	retval = ios_restarttimer(id, val, interval);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, %d, %d)=%d\n", __FUNCTION__, id, val, interval, retval);
+#else
+	printf("%s(%d, %d, %d)\n", __FUNCTION__, id, val, interval);
+#endif
 	return retval;
 }
 
@@ -1781,7 +1855,11 @@ s32 IOS_StopTimer(s32 id)
 	retval = ios_stoptimer(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, id, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, id);
+#endif
 	return retval;
 }
 
@@ -1792,7 +1870,11 @@ s32 IOS_DestroyTimer(s32 id)
 	retval = ios_destroytimer(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, id, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, id);
+#endif
 	return retval;
 }
 
@@ -1803,7 +1885,11 @@ u32 IOS_GetTimer(void)
 	retval = ios_gettimer();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -1814,7 +1900,11 @@ s32 IOS_CreateHeap(void *ptr, u32 size)
 	retval = ios_createheap(ptr, size);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(0x%08x, 0x%x)=%d\n", __FUNCTION__, (u32)ptr, size, retval);
+#else
+	printf("%s(0x%08x, 0x%x)\n", __FUNCTION__, (u32)ptr, size);
+#endif
 	return retval;
 }
 
@@ -1825,7 +1915,11 @@ s32 IOS_DestroyHeap(s32 id)
 	retval = ios_destroyheap(id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(id: %d)=%d\n", __FUNCTION__, id, retval);
+#else
+	printf("%s(id: %d)\n", __FUNCTION__, id);
+#endif
 	return retval;
 }
 
@@ -1836,7 +1930,11 @@ void *IOS_Alloc(s32 id, u32 size)
 	retval = ios_alloc(id, size);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%x)=%p\n", __FUNCTION__, id, size, retval);
+#else
+	printf("%s(%d, 0x%x)\n", __FUNCTION__, id, size);
+#endif
 	return retval;
 }
 
@@ -1847,7 +1945,11 @@ void *IOS_AllocAligned(s32 id, u32 size, u32 align)
 	retval = ios_allocaligned(id, size, align);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%x, %d)=%p\n", __FUNCTION__, id, size, align, retval);
+#else
+	printf("%s(%d, 0x%x, %d)\n", __FUNCTION__, id, size, align);
+#endif
 	return retval;
 }
 
@@ -1858,7 +1960,11 @@ s32 IOS_Free(s32 id, void *ptr)
 	retval = ios_free(id, ptr);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%08x)=%d\n", __FUNCTION__, id, (u32)ptr, retval);
+#else
+	printf("%s(%d, 0x%08x)\n", __FUNCTION__, id, (u32)ptr);
+#endif
 	return retval;
 }
 
@@ -1869,7 +1975,11 @@ s32 IOS_RegisterResourceManager(char *path, s32 id)
 	retval = ios_registerrm(path, id);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%s, %d)=%d\n", __FUNCTION__, path, id, retval);
+#else
+	printf("%s(%s, %d)\n", __FUNCTION__, path, id);
+#endif
 	return retval;
 }
 
@@ -1882,7 +1992,11 @@ s32 IOS_Open(const char *filename, u32 mode)
 	retval = ios_open(filename, mode);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%s, %d)=%d\n", __FUNCTION__, filename, mode, retval);
+#else
+	printf("%s(%s, %d)\n", __FUNCTION__, filename, mode);
+#endif
 	return retval;
 }
 
@@ -1893,7 +2007,11 @@ s32 IOS_Close(s32 fd)
 	retval = ios_close(fd);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, fd, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, fd);
+#endif
 	return retval;
 }
 
@@ -1906,7 +2024,11 @@ s32 IOS_Read(s32 fd, void *buf, u32 count)
 	retval = ios_read(fd, buf, count);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%08x, 0x%x)=%d\n", __FUNCTION__, fd, (u32)buf, count, retval);
+#else
+	printf("%s(%d, 0x%08x, 0x%x)\n", __FUNCTION__, fd, (u32)buf, count);
+#endif
 	return retval;
 }
 #endif
@@ -1918,7 +2040,11 @@ s32 IOS_Write(s32 fd, void *buf, u32 count)
 	retval = ios_write(fd, buf, count);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%08x, 0x%x)=%d\n", __FUNCTION__, fd, (u32)buf, count, retval);
+#else
+	printf("%s(%d, 0x%08x, 0x%x)\n", __FUNCTION__, fd, (u32)buf, count);
+#endif
 	return retval;
 }
 
@@ -1929,7 +2055,11 @@ s32 IOS_Seek(s32 fd, s32 offset, u32 whence)
 	retval = ios_seek(fd, offset, whence);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, %d, %d)=%d\n", __FUNCTION__, fd, offset, whence, retval);
+#else
+	printf("%s(%d, %d, %d)\n", __FUNCTION__, fd, offset, whence);
+#endif
 	return retval;
 }
 
@@ -1940,7 +2070,11 @@ s32 IOS_Ioctl(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen)
 	retval = ios_ioctl(fd, cmd, in, inlen, out, outlen);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%x, 0x%08x, 0x%x, %08x, 0x%x)=%d\n", __FUNCTION__, fd, cmd, (u32)in, inlen, (u32)out, outlen, retval);
+#else
+	printf("%s(%d, 0x%x, 0x%08x, 0x%x, %08x, 0x%x)\n", __FUNCTION__, fd, cmd, (u32)in, inlen, (u32)out, outlen);
+#endif
 	return retval;
 }
 
@@ -1951,7 +2085,11 @@ s32 IOS_Ioctlv(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec)
 	retval = ios_ioctlv(fd, cmd, read, written, vec);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%x, %d, %d, 0x%08x)=%d\n", __FUNCTION__, fd, cmd, read, written, (u32)vec, retval);
+#else
+	printf("%s(%d, 0x%x, %d, %d, 0x%08x)\n", __FUNCTION__, fd, cmd, read, written, (u32)vec);
+#endif
 	return retval;
 }
 
@@ -1962,7 +2100,11 @@ s32 IOS_OpenAsync(const char *filename, u32 mode, s32 id, ioresreq *reply)
 	retval = ios_openasync(filename, mode, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%s, %d, %08x, %08x)=%d\n", __FUNCTION__, filename, mode, id, (u32)reply, retval);
+#else
+	printf("%s(%s, %d, %08x, %08x)\n", __FUNCTION__, filename, mode, id, (u32)reply);
+#endif
 	return retval;
 }
 
@@ -1973,7 +2115,11 @@ s32 IOS_CloseAsync(s32 fd, s32 id, ioresreq *reply)
 	retval = ios_closeasync(fd, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, %08x, %08x)=%d\n", __FUNCTION__, fd, id, (u32)reply, retval);
+#else
+	printf("%s(%d, %08x, %08x)\n", __FUNCTION__, fd, id, (u32)reply);
+#endif
 	return retval;
 }
 
@@ -1984,7 +2130,11 @@ s32 IOS_ReadAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 	retval = ios_readasync(fd, buf, count, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%08x, 0x%x, %08x, %08x)=%d\n", __FUNCTION__, fd, (u32)buf, count, id, (u32)reply, retval);
+#else
+	printf("%s(%d, 0x%08x, 0x%x, %08x, %08x)\n", __FUNCTION__, fd, (u32)buf, count, id, (u32)reply);
+#endif
 	return retval;
 }
 
@@ -1995,7 +2145,11 @@ s32 IOS_WriteAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 	retval = ios_writeasync(fd, buf, count, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%08x, 0x%x, %08x, %08x)=%d\n", __FUNCTION__, fd, (u32)buf, count, id, (u32)reply, retval);
+#else
+	printf("%s(%d, 0x%08x, 0x%x, %08x, %08x)\n", __FUNCTION__, fd, (u32)buf, count, id, (u32)reply);
+#endif
 	return retval;
 }
 
@@ -2006,7 +2160,11 @@ s32 IOS_SeekAsync(s32 fd, s32 offset, u32 whence, s32 id, ioresreq *reply)
 	retval = ios_seekasync(fd, offset, whence, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, %d, %d, %08x, %08x)=%d\n", __FUNCTION__, fd, offset, whence, id, (u32)reply, retval);
+#else
+	printf("%s(%d, %d, %d, %08x, %08x)\n", __FUNCTION__, fd, offset, whence, id, (u32)reply);
+#endif
 	return retval;
 }
 
@@ -2017,7 +2175,11 @@ s32 IOS_IoctlAsync(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen, 
 	retval = ios_ioctlasync(fd, cmd, in, inlen, out, outlen, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%x, 0x%08x, 0x%x, %08x, 0x%x, %08x, %08x)=%d\n", __FUNCTION__, fd, cmd, (u32)in, inlen, (u32)out, outlen, id, (u32)reply, retval);
+#else
+	printf("%s(%d, 0x%x, 0x%08x, 0x%x, %08x, 0x%x, %08x, %08x)\n", __FUNCTION__, fd, cmd, (u32)in, inlen, (u32)out, outlen, id, (u32)reply);
+#endif
 	return retval;
 }
 
@@ -2028,7 +2190,11 @@ s32 IOS_IoctlvAsync(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec, s32 id, 
 	retval = ios_ioctlvasync(fd, cmd, read, written, vec, id, reply);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d, 0x%x, %d, %d, 0x%08x, %08x, %08x)=%d\n", __FUNCTION__, fd, cmd, read, written, (u32)vec, id, (u32)reply, retval);
+#else
+	printf("%s(%d, 0x%x, %d, %d, 0x%08x, %08x, %08x)\n", __FUNCTION__, fd, cmd, read, written, (u32)vec, id, (u32)reply);
+#endif
 	return retval;
 }
 
@@ -2041,7 +2207,11 @@ s32 IOS_ResourceReply(ioresreq *reply, s32 status)
 	retval = ios_resourcereply(reply, status);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(0x%08x, 0x%x)=%d\n", __FUNCTION__, (u32)reply, status, retval);
+#else
+	printf("%s(0x%08x, 0x%x)\n", __FUNCTION__, (u32)reply, status);
+#endif
 	return retval;
 }
 #endif
@@ -2053,7 +2223,11 @@ s32 IOS_SetUid(s32 id, u32 uid)
 	retval = ios_setuid(id, uid);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(pid: %d, uid: %d)=%d\n", __FUNCTION__, id, uid, retval);
+#else
+	printf("%s(pid: %d, uid: %d)\n", __FUNCTION__, id, uid);
+#endif
 	return retval;
 }
 
@@ -2064,7 +2238,11 @@ u32 IOS_GetUid(void)
 	retval = ios_getuid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2075,7 +2253,11 @@ s32 IOS_SetGid(s32 id, u16 gid)
 	retval = ios_setgid(id, gid);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(pid: %d, gid: %d)=%d\n", __FUNCTION__, id, gid, retval);
+#else
+	printf("%s(pid: %d, gid: %d)\n", __FUNCTION__, id, gid);
+#endif
 	return retval;
 }
 
@@ -2086,7 +2268,11 @@ u16 IOS_GetGid(void)
 	retval = ios_getgid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2121,7 +2307,11 @@ s32 IOS_ClearAndEnableIPCIOPIntr(void)
 	retval = ios_clrenipciopintr();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2132,7 +2322,11 @@ s32 IOS_ClearAndEnableDIIntr(void)
 	retval = ios_clrendiintr();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2143,7 +2337,11 @@ s32 IOS_ClearAndEnableSDIntr(u8 num)
 	retval = ios_clrensdintr(num);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, num, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, num);
+#endif
 	return retval;
 }
 
@@ -2154,7 +2352,11 @@ s32 IOS_ClearAndEnableEvent(u32 evt)
 	retval = ios_clrenevt(evt);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, evt, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, evt);
+#endif
 	return retval;
 }
 
@@ -2165,7 +2367,11 @@ s32 IOS_AccessIobPool(iosiobpoolid pool)
 	retval = ios_accessiobpool(pool);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, pool, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, pool);
+#endif
 	return retval;
 }
 
@@ -2176,7 +2382,11 @@ iosiobuf *IOS_AllocIob(u32 pool, u32 size, u32 dbg)
 	retval = ios_allociob(pool, size, dbg);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(pool: 0x%08x, size: %d, debug: %d)=%p\n", __FUNCTION__, pool, size, dbg, retval);
+#else
+	printf("%s(pool: 0x%08x, size: %d, debug: %d)\n", __FUNCTION__, pool, size, dbg);
+#endif
 	return retval;
 }
 
@@ -2187,7 +2397,11 @@ s32 IOS_FreeIob(iosiobuf *ptr)
 	retval = ios_freeiob(ptr);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, (u32)ptr, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, (u32)ptr);
+#endif
 	return retval;
 }
 
@@ -2216,7 +2430,11 @@ u8 *IOS_PutIob(iosiobuf *iob, u16 len)
 	retval = ios_putiob(iob, len);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(buf: 0x%08x, len: %d)=%p\n", __FUNCTION__, (u32)iob, len, retval);
+#else
+	printf("%s(buf: 0x%08x, len: %d)\n", __FUNCTION__, (u32)iob, len);
+#endif
 	return retval;
 }
 
@@ -2227,7 +2445,11 @@ u8 *IOS_PushIob(iosiobuf *iob, u16 len)
 	retval = ios_pushiob(iob, len);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(buf: 0x%08x, len: %d)=%p\n", __FUNCTION__, (u32)iob, len, retval);
+#else
+	printf("%s(buf: 0x%08x, len: %d)\n", __FUNCTION__, (u32)iob, len);
+#endif
 	return retval;
 }
 
@@ -2238,7 +2460,11 @@ u8 *IOS_PullIob(iosiobuf *iob, u16 len)
 	retval = ios_pulliob(iob, len);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(buf: 0x%08x, len: %d)=%p\n", __FUNCTION__, (u32)iob, len, retval);
+#else
+	printf("%s(buf: 0x%08x, len: %d)\n", __FUNCTION__, (u32)iob, len);
+#endif
 	return retval;
 }
 
@@ -2251,7 +2477,11 @@ s32 IOS_IsValidIob(iosiobuf *iob)
 	retval = ios_validiob(iob);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%08x)=%d\n", __FUNCTION__, (u32)iob, retval);
+#else
+	printf("%s(%08x)\n", __FUNCTION__, (u32)iob);
+#endif
 	return retval;
 }
 #endif
@@ -2263,7 +2493,11 @@ iosiobuf *IOS_CloneIob(iosiobuf *iob)
 	retval = ios_cloneiob(iob);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%08x)=%p\n", __FUNCTION__, (u32)iob, retval);
+#else
+	printf("%s(%08x)\n", __FUNCTION__, (u32)iob);
+#endif
 	return retval;
 }
 
@@ -2299,7 +2533,11 @@ s32 IOS_LaunchElf(const char *filename)
 	retval = ios_launchelf(filename);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%s)=%d\n", __FUNCTION__, filename, retval);
+#else
+	printf("%s(%s\n", __FUNCTION__, filename);
+#endif
 	return retval;
 }
 
@@ -2311,7 +2549,11 @@ s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
 	retval = ios_launchos(filename, r1, filesize);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%s, reset: %d, version: %d)=%d\n", __FUNCTION__, filename, r1, filesize, retval);
+#else
+	printf("%s(%s, reset: %d, version: %d)\n", __FUNCTION__, filename, r1, filesize);
+#endif
 	return retval;
 }
 
@@ -2331,7 +2573,11 @@ s32 IOS_ResetDI(void)
 	retval = ios_resetdi();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2342,7 +2588,11 @@ s32 IOS_ReleaseDIReset(void)
 	retval = ios_releasedi();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2353,7 +2603,11 @@ u8 IOS_IsDIReset(void)
 	retval = ios_isdireset();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2382,7 +2636,11 @@ u32 IOS_GetDDRVendorIds(void)
 	retval = ios_getddrvenids();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2393,7 +2651,11 @@ u32 IOS_GetHollywoodId(void)
 	retval = ios_gethwid();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2413,7 +2675,11 @@ s32 IOS_SetLoMemOSVersion(u32 ver)
 	retval = ios_setlomemosver(ver);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, ver, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, ver);
+#endif
 	return retval;
 }
 
@@ -2424,7 +2690,11 @@ u32 IOS_GetLoMemOSVersion(u32 ver)
 	retval = ios_getlomemosver(ver);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, ver, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, ver);
+#endif
 	return retval;
 }
 
@@ -2435,7 +2705,11 @@ s32 IOS_SetDiSpinup(u32 s)
 	retval = ios_setdispinup(s);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, s, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, s);
+#endif
 	return retval;
 }
 
@@ -2448,7 +2722,11 @@ void *IOS_VirtualToPhysical(void *virt)
 	retval = ios_vtop(virt);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
-	printf("%s(%08x)=%08x\n", __FUNCTION__, virt, retval);
+#if PRINT_RETVAL
+	printf("%s(%08x)=%08x)\n", __FUNCTION__, virt, retval);
+#else
+	printf("%s(%08x)=%08x)\n", __FUNCTION__, virt);
+#endif
 	return retval;
 }
 #endif
@@ -2460,7 +2738,11 @@ s32 IOS_SetDVDReadDisable(u8 disable)
 	retval = ios_setdvdrddis(disable);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(state = %d)=%d\n", __FUNCTION__, disable, retval);
+#else
+	printf("%s(state = %d\n", __FUNCTION__, disable);
+#endif
 	return retval;
 }
 
@@ -2471,7 +2753,11 @@ u8 IOS_GetDVDReadDisable(void)
 	retval = ios_getdvdrddis();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2482,7 +2768,11 @@ s32 IOS_SetEnableAHBPI2DI(u8 enable)
 	retval = ios_setenahbpi2di(enable);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, enable, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, enable);
+#endif
 	return retval;
 }
 
@@ -2493,7 +2783,11 @@ u8 IOS_GetEnableAHBPI2DI(void)
 	retval = ios_getenahbpi2di();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2504,7 +2798,11 @@ s32 IOS_SetPPCACRPerms(u8 enable)
 	retval = ios_setppcacrperms(enable);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%d)=%d\n", __FUNCTION__, enable, retval);
+#else
+	printf("%s(%d)\n", __FUNCTION__, enable);
+#endif
 	return retval;
 }
 
@@ -2515,7 +2813,11 @@ u32 IOS_GetCoreClk(void)
 	retval = ios_getcoreclk();
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s()=%d\n", __FUNCTION__, retval);
+#else
+	printf("%s()\n", __FUNCTION__);
+#endif
 	return retval;
 }
 
@@ -2528,7 +2830,11 @@ s32 IOS_ACRRegWrite(u32 offset, u32 value)
 	retval = ios_acrregwr(offset, value);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(offset: 0x%08x, value: %d)=%d\n", __FUNCTION__, offset, value, retval);
+#else
+	printf("%s(offset: 0x%08x, value: %d)\n", __FUNCTION__, offset, value);
+#endif
 	return retval;
 }
 #endif
@@ -2542,7 +2848,11 @@ s32 IOS_DDRRegWrite(u32 offset, u32 value)
 	retval = ios_ddrregwr(offset, value);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(offset: 0x%08x, value: %d)=%d\n", __FUNCTION__, offset, value, retval);
+#else
+	printf("%s(offset: 0x%08x, value: %d)\n", __FUNCTION__, offset, value);
+#endif
 	return retval;
 }
 #endif
@@ -2563,7 +2873,11 @@ s32 IOS_SetIpcAccessRights(u8 *rights)
 	retval = ios_setipcaccrights(rights);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%08x)=%d\n", __FUNCTION__, (u32)rights, retval);
+#else
+	printf("%s(%08x)\n", __FUNCTION__, (u32)rights);
+#endif
 	return retval;
 }
 
@@ -2577,7 +2891,11 @@ s32 IOS_LaunchRM(const char *filename)
 	retval = ios_launchrm(filename);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
+#if PRINT_RETVAL
 	printf("%s(%s)=%d\n", __FUNCTION__, filename, retval);
+#else
+	printf("%s(%s\n", __FUNCTION__, filename);
+#endif
 	return retval;
 }
 
