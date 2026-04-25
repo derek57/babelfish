@@ -3356,8 +3356,8 @@ void *_main(void *base)
 	FIL fd;
 	u32 read;
 	ioshdr *hdr = (ioshdr *)base;
-	unsigned int boot2_elf_offset = 0;
-	unsigned int boot2v4_elf_size = 0;
+	u32 boot2_elf_offset = 0;
+	u32 boot2v4_elf_size = 0;
 
 	elf = (u8 *)base;
 	elf += (hdr->hdrsize + hdr->loadersize);

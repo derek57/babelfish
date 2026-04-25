@@ -854,7 +854,7 @@ void sdhc_init(void)
 /*
 static void sdhc_exit(void)
 {
-       sdhc_shutdown();
+	sdhc_shutdown();
 }
 */
 

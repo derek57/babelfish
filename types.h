@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stddef.h>
 
 
-#define	NULL		((void *)0)
+#define NULL		((void *)0)
 #define UINT_MAX	((unsigned int)0xffffffff)
 #define ALIGNED(x)	__attribute__((aligned(x)))
 #define MEM2_BSS	__attribute__((section (".bss.mem2")))

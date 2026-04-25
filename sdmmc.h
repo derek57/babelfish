@@ -197,16 +197,16 @@ Copyright (C) 2008, 2009	Sven Peter <svenpeter@gmail.com>
 
 /* SD R2 response (CSD) */
 #define SD_CSD_CSDVER(resp)		MMC_RSP_BITS((resp), 126, 2)
-#define  SD_CSD_CSDVER_1_0		0
-#define  SD_CSD_CSDVER_2_0		1
+#define SD_CSD_CSDVER_1_0		0
+#define SD_CSD_CSDVER_2_0		1
 #define SD_CSD_TAAC(resp)		MMC_RSP_BITS((resp), 112, 8)
-#define  SD_CSD_TAAC_1_5_MSEC		0x26
+#define SD_CSD_TAAC_1_5_MSEC		0x26
 #define SD_CSD_NSAC(resp)		MMC_RSP_BITS((resp), 104, 8)
 #define SD_CSD_SPEED(resp)		MMC_RSP_BITS((resp), 96, 8)
-#define  SD_CSD_SPEED_25_MHZ		0x32
-#define  SD_CSD_SPEED_50_MHZ		0x5a
+#define SD_CSD_SPEED_25_MHZ		0x32
+#define SD_CSD_SPEED_50_MHZ		0x5a
 #define SD_CSD_CCC(resp)		MMC_RSP_BITS((resp), 84, 12)
-#define  SD_CSD_CCC_ALL			0x5f5
+#define SD_CSD_CCC_ALL			0x5f5
 #define SD_CSD_READ_BL_LEN(resp)	MMC_RSP_BITS((resp), 80, 4)
 #define SD_CSD_READ_BL_PARTIAL(resp)	MMC_RSP_BITS((resp), 79, 1)
 #define SD_CSD_WRITE_BLK_MISALIGN(resp)	MMC_RSP_BITS((resp), 78, 1)
@@ -224,8 +224,8 @@ Copyright (C) 2008, 2009	Sven Peter <svenpeter@gmail.com>
 #define SD_CSD_VDD_R_CURR_MAX(resp)	MMC_RSP_BITS((resp), 56, 3)
 #define SD_CSD_VDD_W_CURR_MIN(resp)	MMC_RSP_BITS((resp), 53, 3)
 #define SD_CSD_VDD_W_CURR_MAX(resp)	MMC_RSP_BITS((resp), 50, 3)
-#define  SD_CSD_VDD_RW_CURR_100mA	0x7
-#define  SD_CSD_VDD_RW_CURR_80mA	0x6
+#define SD_CSD_VDD_RW_CURR_100mA	0x7
+#define SD_CSD_VDD_RW_CURR_80mA		0x6
 #define SD_CSD_C_SIZE_MULT(resp)	MMC_RSP_BITS((resp), 47, 3)
 #define SD_CSD_ERASE_BLK_EN(resp)	MMC_RSP_BITS((resp), 46, 1)
 
@@ -238,8 +238,8 @@ Copyright (C) 2008, 2009	Sven Peter <svenpeter@gmail.com>
 #define SD_CSD_WP_GRP_ENABLE(resp)	MMC_RSP_BITS((resp), 31, 1)
 #define SD_CSD_R2W_FACTOR(resp)		MMC_RSP_BITS((resp), 26, 3)
 #define SD_CSD_WRITE_BL_LEN(resp)	MMC_RSP_BITS((resp), 22, 4)
-#define  SD_CSD_RW_BL_LEN_2G		0xa
-#define  SD_CSD_RW_BL_LEN_1G		0x9
+#define SD_CSD_RW_BL_LEN_2G		0xa
+#define SD_CSD_RW_BL_LEN_1G		0x9
 #define SD_CSD_WRITE_BL_PARTIAL(resp)	MMC_RSP_BITS((resp), 21, 1)
 #define SD_CSD_FILE_FORMAT_GRP(resp)	MMC_RSP_BITS((resp), 15, 1)
 #define SD_CSD_COPY(resp)		MMC_RSP_BITS((resp), 14, 1)

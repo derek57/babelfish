@@ -31,7 +31,7 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 
 typedef struct
 {
-	unsigned char e_ident[EI_NIDENT];
+	u8 e_ident[EI_NIDENT];
 	u16 e_type;
 	u16 e_machine;
 	u32 e_version;

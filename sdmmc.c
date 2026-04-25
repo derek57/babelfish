@@ -238,7 +238,7 @@ static void sdmmc_needs_discover(void)
 	// sdhc
 	if (resp[13] == 0xe)
 	{
-		unsigned int c_size = resp[7] << 16 | resp[6] << 8 | resp[5];
+		u32 c_size = resp[7] << 16 | resp[6] << 8 | resp[5];
 
 		DPRINTF(0, "sdmmc: sdhc mode, c_size=%u, card size = %uk\n", c_size, (c_size + 1) * 512);
 
@@ -250,20 +250,20 @@ static void sdmmc_needs_discover(void)
 	}
 	else
 	{
-		unsigned int taac = resp[13];
+		u32 taac = resp[13];
 
 #if SDMMC_DEBUG
-		unsigned int nsac = resp[12];
+		u32 nsac = resp[12];
 #endif
 
-		unsigned int read_bl_len = resp[9] & 0xF;
-		unsigned int c_size = (resp[8] & 3) << 10;
-		unsigned int c_size_mult = (resp[5] & 3) << 1;
+		u32 read_bl_len = resp[9] & 0xF;
+		u32 c_size = (resp[8] & 3) << 10;
+		u32 c_size_mult = (resp[5] & 3) << 1;
 
-		static const unsigned int time_unit[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000};
+		static const u32 time_unit[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000};
 
 		// must div by 10
-		static const unsigned int time_value[] = {1, 10, 12, 13, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80};
+		static const u32 time_value[] = {1, 10, 12, 13, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80};
 
 		c_size |= (resp[7] << 2);
 		c_size |= (resp[6] >> 6);

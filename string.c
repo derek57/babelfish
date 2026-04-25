@@ -13,6 +13,51 @@ https://negix.net/trac/pdclib
 #include "string.h"
 
 
+void *memset(void *b, int c, size_t len)
+{
+	size_t i;
+
+	for (i = 0; i < len; i++)
+		((u8 *)b)[i] = c;
+
+	return b;
+}
+
+void *memcpy(void *dst, const void *src, size_t len)
+{
+	size_t i;
+
+	for (i = 0; i < len; i++)
+		((u8 *)dst)[i] = ((u8 *)src)[i];
+
+	return dst;
+}
+
+void *memcpyr(void *dst, const void *src, size_t len)
+{
+	size_t i;
+
+	for (i = len; i > 0; i--)
+		((u8 *)dst)[i - 1] = ((u8 *)src)[i - 1];
+
+	return dst;
+}
+
+int memcmp(const void *s1, const void *s2, size_t len)
+{
+	size_t i;
+	const u8 *p1 = (const u8 *)s1;
+	const u8 *p2 = (const u8 *)s2;
+
+	for (i = 0; i < len; i++)
+	{
+		if (p1[i] != p2[i])
+			return p1[i] - p2[i];
+	}
+	
+	return 0;
+}
+
 /*
 size_t strlen(const char *s)
 {
@@ -32,43 +77,6 @@ size_t strnlen(const char *s, size_t count)
 		;
 
 	return len;
-}
-*/
-
-void *memset(void *b, int c, size_t len)
-{
-	size_t i;
-
-	for (i = 0; i < len; i++)
-		((unsigned char *)b)[i] = c;
-
-	return b;
-}
-
-void *memcpy(void *dst, const void *src, size_t len)
-{
-	size_t i;
-
-	for (i = 0; i < len; i++)
-		((unsigned char *)dst)[i] = ((unsigned char *)src)[i];
-
-	return dst;
-}
-
-/*
-int memcmp(const void *s1, const void *s2, size_t len)
-{
-	size_t i;
-	const unsigned char *p1 = (const unsigned char *)s1;
-	const unsigned char *p2 = (const unsigned char *)s2;
-
-	for (i = 0; i < len; i++)
-	{
-		if (p1[i] != p2[i])
-			return p1[i] - p2[i];
-	}
-
-	return 0;
 }
 
 int strcmp(const char *s1, const char *s2)
@@ -117,7 +125,7 @@ size_t strlcat(char *dest, const char *src, size_t maxlen)
 	return used + strlcpy(dest + used, src, maxlen - used);
 }
 
-char * strchr(const char *s, int c)
+char *strchr(const char *s, int c)
 {
 	size_t i;
 

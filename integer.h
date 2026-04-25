@@ -5,20 +5,23 @@
 #define __INTEGER_H__
 
 
+#include "types.h"
+
+
 /* These types must be 16-bit, 32-bit or larger integer */
 typedef int		INT;
-typedef unsigned int	UINT;
+typedef u32		UINT;
 
 /* These types must be 8-bit integer */
-typedef signed char	CHAR;
-typedef unsigned char	UCHAR;
-typedef unsigned char	BYTE;
+typedef s8		CHAR;
+typedef u8		UCHAR;
+typedef u8		BYTE;
 
 /* These types must be 16-bit integer */
 typedef short		SHORT;
-typedef unsigned short	USHORT;
-typedef unsigned short	WORD;
-typedef unsigned short	WCHAR;
+typedef u16		USHORT;
+typedef u16		WORD;
+typedef u16		WCHAR;
 
 /* These types must be 32-bit integer */
 typedef long		LONG;

@@ -13,40 +13,56 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 #define __HOLLYWOOD_H__
 
 
-#define		HW_REG_BASE		0xd800000
+#define	HW_REG_BASE		0xd800000
 
-#define		HW_TIMER		(HW_REG_BASE + 0x010)
-#define		HW_ARMIRQMASK		(HW_REG_BASE + 0x03c)
-#define		HW_MEMMIRR		(HW_REG_BASE + 0x060)
-#define		HW_BOOT0		(HW_REG_BASE + 0x18c)
-#define		HW_EXICTRL		(HW_REG_BASE + 0x070)
+#define	HW_TIMER		(HW_REG_BASE + 0x010)
+#define	HW_ARMIRQMASK		(HW_REG_BASE + 0x03c)
+#define	HW_MEMMIRR		(HW_REG_BASE + 0x060)
+#define	HW_BOOT0		(HW_REG_BASE + 0x18c)
+#define	HW_EXICTRL		(HW_REG_BASE + 0x070)
 
-#define		EXICTRL_ENABLE_EXI	1
+#define	EXICTRL_ENABLE_EXI	1
 
-#define		HW_VERSION		(HW_REG_BASE + 0x214)
+#define	HW_VERSION		(HW_REG_BASE + 0x214)
 
-#define		MEM_REG_BASE		0xd8b4000
+#define	MEM_REG_BASE		0xd8b4000
 
-#define		MEM_FLUSHREQ		(MEM_REG_BASE + 0x228)
-#define		MEM_FLUSHACK		(MEM_REG_BASE + 0x22a)
+#define	MEM_FLUSHREQ		(MEM_REG_BASE + 0x228)
+#define	MEM_FLUSHACK		(MEM_REG_BASE + 0x22a)
 
-#define		EXI_REG_BASE		0xd806800
+#define	EXI_REG_BASE		0xd806800
 
-#define		EXI0_REG_BASE		(EXI_REG_BASE + 0x000)
-#define		EXI2_REG_BASE		(EXI_REG_BASE + 0x028)
+#define	EXI0_REG_BASE		(EXI_REG_BASE + 0x000)
+#define	EXI2_REG_BASE		(EXI_REG_BASE + 0x028)
 
-#define		EXI0_CSR		(EXI0_REG_BASE + 0x000)
-#define		EXI2_CSR		(EXI2_REG_BASE + 0x000)
+#define	EXI0_CSR		(EXI0_REG_BASE + 0x000)
+#define	EXI2_CSR		(EXI2_REG_BASE + 0x000)
 
-#define		EXI1_REG_BASE		(EXI_REG_BASE + 0x014)
+#define	EXI1_REG_BASE		(EXI_REG_BASE + 0x014)
 
-#define		EXI1_CSR		(EXI1_REG_BASE + 0x000)
-#define		EXI1_MAR		(EXI1_REG_BASE + 0x004)
-#define		EXI1_LENGTH		(EXI1_REG_BASE + 0x008)
-#define		EXI1_CR			(EXI1_REG_BASE + 0x00c)
-#define		EXI1_DATA		(EXI1_REG_BASE + 0x010)
+#define	EXI1_CSR		(EXI1_REG_BASE + 0x000)
+#define	EXI1_MAR		(EXI1_REG_BASE + 0x004)
+#define	EXI1_LENGTH		(EXI1_REG_BASE + 0x008)
+#define	EXI1_CR			(EXI1_REG_BASE + 0x00c)
+#define	EXI1_DATA		(EXI1_REG_BASE + 0x010)
 
-#define		SDHC_REG_BASE		0xd070000
+#define	SDHC_REG_BASE		0xd070000
+
+#define	HW_100			(HW_REG_BASE + 0x100)
+#define	HW_104			(HW_REG_BASE + 0x104)
+#define	HW_108			(HW_REG_BASE + 0x108)
+#define	HW_10c			(HW_REG_BASE + 0x10c)
+#define	HW_110			(HW_REG_BASE + 0x110)
+#define	HW_114			(HW_REG_BASE + 0x114)
+#define	HW_118			(HW_REG_BASE + 0x118)
+#define	HW_11c			(HW_REG_BASE + 0x11c)
+#define	HW_120			(HW_REG_BASE + 0x120)
+#define	HW_124			(HW_REG_BASE + 0x124)
+#define	HW_130			(HW_REG_BASE + 0x130)
+#define	HW_134			(HW_REG_BASE + 0x134)
+#define	HW_138			(HW_REG_BASE + 0x138)
+#define	HW_188			(HW_REG_BASE + 0x188)
+#define	HW_18C			(HW_REG_BASE + 0x18c)
 
 #endif
 
