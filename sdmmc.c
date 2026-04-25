@@ -47,35 +47,32 @@ static struct sdmmc_card card MEM2_BSS;
 #endif
 
 
-void sdmmc_attach(sdmmc_chipset_handle_t handle)
-{
-	memset(&card, 0, sizeof(card));
-	card.handle = handle;
-	DPRINTF(0, "sdmmc: attached new SD/MMC card\n");
-	sdhc_host_reset(card.handle);
-
-	if (sdhc_card_detect(card.handle))
-	{
-		DPRINTF(1, "card is inserted. starting init sequence.\n");
-		sdmmc_needs_discover();
-	}
-}
-
-/*
-void sdmmc_abort(void)
+static int sdmmc_select(void)
 {
 	struct sdmmc_command cmd;
 
-	DPRINTF(0, "abortion kthx\n");	
+	DPRINTF(2, "sdmmc: MMC_SELECT_CARD\n");
 	memset(&cmd, 0, sizeof(cmd));
-	cmd.c_opcode = MMC_STOP_TRANSMISSION;
-	cmd.c_arg = 0;
+	cmd.c_opcode = MMC_SELECT_CARD;
+	cmd.c_arg = ((u32)card.rca)<<16;
 	cmd.c_flags = SCF_RSP_R1B;
 	sdhc_exec_command(card.handle, &cmd);
-}
-*/
+	DPRINTF(0, "%s: resp=%x\n", __FUNCTION__, MMC_R1(cmd.c_resp));
+//	sdhc_dump_regs(card.handle);
 
-void sdmmc_needs_discover(void)
+//	DPRINTF(0, "present state = %x\n", HREAD4(hp, SDHC_PRESENT_STATE));
+
+	if (cmd.c_error)
+	{
+		DPRINTF(0, "sdmmc: MMC_SELECT card failed with %d.\n", cmd.c_error);
+		return -1;
+	}
+
+	card.selected = 1;
+	return 0;
+}
+
+static void sdmmc_needs_discover(void)
 {
 	struct sdmmc_command cmd;
 	u32 ocr;
@@ -311,31 +308,33 @@ out:
 	return;
 }
 
+void sdmmc_attach(sdmmc_chipset_handle_t handle)
+{
+	memset(&card, 0, sizeof(card));
+	card.handle = handle;
+	DPRINTF(0, "sdmmc: attached new SD/MMC card\n");
+	sdhc_host_reset(card.handle);
 
-int sdmmc_select(void)
+	if (sdhc_card_detect(card.handle))
+	{
+		DPRINTF(1, "card is inserted. starting init sequence.\n");
+		sdmmc_needs_discover();
+	}
+}
+
+/*
+static void sdmmc_abort(void)
 {
 	struct sdmmc_command cmd;
 
-	DPRINTF(2, "sdmmc: MMC_SELECT_CARD\n");
+	DPRINTF(0, "abortion kthx\n");	
 	memset(&cmd, 0, sizeof(cmd));
-	cmd.c_opcode = MMC_SELECT_CARD;
-	cmd.c_arg = ((u32)card.rca)<<16;
+	cmd.c_opcode = MMC_STOP_TRANSMISSION;
+	cmd.c_arg = 0;
 	cmd.c_flags = SCF_RSP_R1B;
 	sdhc_exec_command(card.handle, &cmd);
-	DPRINTF(0, "%s: resp=%x\n", __FUNCTION__, MMC_R1(cmd.c_resp));
-//	sdhc_dump_regs(card.handle);
-
-//	DPRINTF(0, "present state = %x\n", HREAD4(hp, SDHC_PRESENT_STATE));
-
-	if (cmd.c_error)
-	{
-		DPRINTF(0, "sdmmc: MMC_SELECT card failed with %d.\n", cmd.c_error);
-		return -1;
-	}
-
-	card.selected = 1;
-	return 0;
 }
+*/
 
 int sdmmc_check_card(void)
 {
@@ -414,7 +413,7 @@ int sdmmc_read(u32 blk_start, u32 blk_count, void *data)
 
 /*
 #ifndef LOADER
-int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
+static int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
 {
 	struct sdmmc_command cmd;
 
@@ -465,7 +464,7 @@ int sdmmc_write(u32 blk_start, u32 blk_count, void *data)
 	return 0;
 }
 
-int sdmmc_get_sectors(void)
+static int sdmmc_get_sectors(void)
 {
 	if (card.inserted == 0)
 	{

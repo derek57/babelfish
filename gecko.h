@@ -16,7 +16,6 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 #include "types.h"
 
 
-int gecko_isalive(void);
 int gecko_putc(int c);
 int gecko_puts(const char *s);
 int gecko_logbuf(const char *s, u32 len);

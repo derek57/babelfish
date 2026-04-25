@@ -590,7 +590,7 @@ static void print_ctx_tag(int ctx)
 	}
 }
 
-void replace_ios_loader(u32 *buffer)
+static void replace_ios_loader(u32 *buffer)
 {
 	/*u32 cookie =*/ irq_kill();
 	u32 *me = (u32 *)MEMHOLE_ADDR;
@@ -660,7 +660,7 @@ void replace_ios_loader(u32 *buffer)
 // from IOS, because there was no easy way to just hook it.  This option is better than option 2,
 // because we don't need to hardcode the value of buffer; IIRC, this code is not present on early versions of IOS.
 #if USE_RELOAD_IOS
-void reload_ios_wrapper(u32 *buffer, u32 version)
+static void reload_ios_wrapper(u32 *buffer, u32 version)
 {
 	/*u32 cookie =*/ irq_kill();
 
@@ -698,7 +698,7 @@ void reload_ios_wrapper(u32 *buffer, u32 version)
 
 // option 2:
 // we really need to figure out how to find the buffer we need at runtime if we intend on using this
-u32 xchange_osvers_and_patch(u32 version)
+static u32 xchange_osvers_and_patch(u32 version)
 {
 	// safe to hardcode?  NO --
 	u32 *buffer = (u32 *)0x10100000;
@@ -728,7 +728,7 @@ u32 xchange_osvers_and_patch(u32 version)
 #if PPCHAX
 // This code is a mess because I was flailing around trying to get PPC patching
 // to work, sorry ... this code *doesn't* work.
-void stuff_EXI_stub_wrapper(u32 which_stub, u32 *insns, u32 len)
+static void stuff_EXI_stub_wrapper(u32 which_stub, u32 *insns, u32 len)
 {
 	u32 addr;
 	u32 *mem1 = (u32 *)0x1330000;
@@ -761,7 +761,7 @@ void stuff_EXI_stub_wrapper(u32 which_stub, u32 *insns, u32 len)
 	dprintf("stuff_EXI_stub done\n");
 }
 
-void powerpc_reset_wrapper(void)
+static void powerpc_reset_wrapper(void)
 {
 	u32 addr;
 	u32 time_next;
@@ -819,7 +819,7 @@ void powerpc_reset_wrapper(void)
 //	dprintf("powerpc_reset done\n");
 }
 
-u32 *find_ppcreset(void)
+static u32 *find_ppcreset(void)
 {
 	int i;
 	u32 magic[] = { 0x0d800034, 0x0d800194 };
@@ -845,7 +845,7 @@ u32 *find_ppcreset(void)
 	return NULL;
 }
 
-void find_powerpc_reset(void)
+static void find_powerpc_reset(void)
 {
 	int i;
 	u32 magic[] = { 0x0d800034, 0x0d800194 };
@@ -908,7 +908,7 @@ void find_powerpc_reset(void)
 #if USE_RELOAD_IOS
 
 // look for the reload_ios function in a newly-loaded IOS kernel
-u32 *find_reload_ios(void)
+static u32 *find_reload_ios(void)
 {
 	int i;
 
@@ -954,7 +954,7 @@ u32 *find_reload_ios(void)
 // kernel:FFFF5A26 23 C4 01 9B                 MOVS    R3, 0x3100
 // kernel:FFFF5A2A 6C 1D                       LDR     R5, [R3,#0x40]
 
-u32 *find_xchange_osvers(void)
+static u32 *find_xchange_osvers(void)
 {
 	int i;
 	u32 magic[] = { 0xB53023C4 };
@@ -977,7 +977,7 @@ u32 *find_xchange_osvers(void)
 #endif
 
 // this is where we patch teh kernel to add our hooks
-void do_kernel_patches(u32 size)
+static void do_kernel_patches(u32 size)
 {
 	u32 i;
 	u32 *addr;
@@ -1102,7 +1102,7 @@ void do_kernel_patches(u32 size)
 }
 
 // this gross patch is necessary to get WC24 debug spew
-void do_kd_patch(u8 *buffer, u32 size)
+static void do_kd_patch(u8 *buffer, u32 size)
 {
 	u32 i;
 	/*u32 cookie =*/ irq_kill();
@@ -1563,7 +1563,7 @@ typedef s32(*ios_launchrm_func)(const char *);
 ios_launchrm_func ios_launchrm = NULL;
 
 // wrapper functions for hooked syscalls
-s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32 prio, u32 attr)
+static s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32 prio, u32 attr)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1587,7 +1587,7 @@ s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksize, u32
 	return retval;
 }
 
-s32 IOS_JoinThread(u32 id, void **arg)
+static s32 IOS_JoinThread(u32 id, void **arg)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1602,7 +1602,7 @@ s32 IOS_JoinThread(u32 id, void **arg)
 	return retval;
 }
 
-s32 IOS_DestroyThread(u32 id, void *arg)
+static s32 IOS_DestroyThread(u32 id, void *arg)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1617,7 +1617,7 @@ s32 IOS_DestroyThread(u32 id, void *arg)
 	return retval;
 }
 
-s32 IOS_GetThreadId(void)
+static s32 IOS_GetThreadId(void)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1632,7 +1632,7 @@ s32 IOS_GetThreadId(void)
 	return retval;
 }
 
-s32 IOS_GetProcessId(void)
+static s32 IOS_GetProcessId(void)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1647,7 +1647,7 @@ s32 IOS_GetProcessId(void)
 	return retval;
 }
 
-s32 IOS_StartThread(s32 id)
+static s32 IOS_StartThread(s32 id)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1662,7 +1662,7 @@ s32 IOS_StartThread(s32 id)
 	return retval;
 }
 
-s32 IOS_StopThread(s32 id)
+static s32 IOS_StopThread(s32 id)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1677,7 +1677,7 @@ s32 IOS_StopThread(s32 id)
 	return retval;
 }
 
-void IOS_YieldThread(void)
+static void IOS_YieldThread(void)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_yieldthread();
@@ -1686,7 +1686,7 @@ void IOS_YieldThread(void)
 	printf("%s()\n", __FUNCTION__);
 }
 
-s32 IOS_GetThreadPriority(s32 id)
+static s32 IOS_GetThreadPriority(s32 id)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1701,7 +1701,7 @@ s32 IOS_GetThreadPriority(s32 id)
 	return retval;
 }
 
-s32 IOS_SetThreadPriority(s32 id, u32 prio)
+static s32 IOS_SetThreadPriority(s32 id, u32 prio)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1716,7 +1716,7 @@ s32 IOS_SetThreadPriority(s32 id, u32 prio)
 	return retval;
 }
 
-s32 IOS_CreateMessageQueue(s32 *msg, u32 size)
+static s32 IOS_CreateMessageQueue(s32 *msg, u32 size)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1731,7 +1731,7 @@ s32 IOS_CreateMessageQueue(s32 *msg, u32 size)
 	return retval;
 }
 
-s32 IOS_DestroyMessageQueue(s32 id)
+static s32 IOS_DestroyMessageQueue(s32 id)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1746,7 +1746,7 @@ s32 IOS_DestroyMessageQueue(s32 id)
 	return retval;
 }
 
-s32 IOS_SendMessage(s32 id, s32 msg, u32 flag)
+static s32 IOS_SendMessage(s32 id, s32 msg, u32 flag)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1761,7 +1761,7 @@ s32 IOS_SendMessage(s32 id, s32 msg, u32 flag)
 	return retval;
 }
 
-s32 IOS_JamMessage(s32 id, s32 msg, u32 flag)
+static s32 IOS_JamMessage(s32 id, s32 msg, u32 flag)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1778,7 +1778,7 @@ s32 IOS_JamMessage(s32 id, s32 msg, u32 flag)
 
 // SPAM
 #if 0
-s32 IOS_ReceiveMessage(s32 id, s32 *msg, u32 flag)
+static s32 IOS_ReceiveMessage(s32 id, s32 *msg, u32 flag)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1794,7 +1794,7 @@ s32 IOS_ReceiveMessage(s32 id, s32 *msg, u32 flag)
 }
 #endif
 
-s32 IOS_HandleEvent(u32 ev, s32 id, s32 msg)
+static s32 IOS_HandleEvent(u32 ev, s32 id, s32 msg)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1809,7 +1809,7 @@ s32 IOS_HandleEvent(u32 ev, s32 id, s32 msg)
 	return retval;
 }
 
-s32 IOS_UnhandleEvent(u32 ev)
+static s32 IOS_UnhandleEvent(u32 ev)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1824,7 +1824,7 @@ s32 IOS_UnhandleEvent(u32 ev)
 	return retval;
 }
 
-s32 IOS_CreateTimer(u32 val, u32 interval, s32 mqid, s32 msg)
+static s32 IOS_CreateTimer(u32 val, u32 interval, s32 mqid, s32 msg)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1839,7 +1839,7 @@ s32 IOS_CreateTimer(u32 val, u32 interval, s32 mqid, s32 msg)
 	return retval;
 }
 
-s32 IOS_RestartTimer(s32 id, u32 val, u32 interval)
+static s32 IOS_RestartTimer(s32 id, u32 val, u32 interval)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1854,7 +1854,7 @@ s32 IOS_RestartTimer(s32 id, u32 val, u32 interval)
 	return retval;
 }
 
-s32 IOS_StopTimer(s32 id)
+static s32 IOS_StopTimer(s32 id)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1869,7 +1869,7 @@ s32 IOS_StopTimer(s32 id)
 	return retval;
 }
 
-s32 IOS_DestroyTimer(s32 id)
+static s32 IOS_DestroyTimer(s32 id)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1884,7 +1884,7 @@ s32 IOS_DestroyTimer(s32 id)
 	return retval;
 }
 
-u32 IOS_GetTimer(void)
+static u32 IOS_GetTimer(void)
 {
 	u32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1899,7 +1899,7 @@ u32 IOS_GetTimer(void)
 	return retval;
 }
 
-s32 IOS_CreateHeap(void *ptr, u32 size)
+static s32 IOS_CreateHeap(void *ptr, u32 size)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1914,7 +1914,7 @@ s32 IOS_CreateHeap(void *ptr, u32 size)
 	return retval;
 }
 
-s32 IOS_DestroyHeap(s32 id)
+static s32 IOS_DestroyHeap(s32 id)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1929,7 +1929,7 @@ s32 IOS_DestroyHeap(s32 id)
 	return retval;
 }
 
-void *IOS_Alloc(s32 id, u32 size)
+static void *IOS_Alloc(s32 id, u32 size)
 {
 	void *retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1944,7 +1944,7 @@ void *IOS_Alloc(s32 id, u32 size)
 	return retval;
 }
 
-void *IOS_AllocAligned(s32 id, u32 size, u32 align)
+static void *IOS_AllocAligned(s32 id, u32 size, u32 align)
 {
 	void *retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1959,7 +1959,7 @@ void *IOS_AllocAligned(s32 id, u32 size, u32 align)
 	return retval;
 }
 
-s32 IOS_Free(s32 id, void *ptr)
+static s32 IOS_Free(s32 id, void *ptr)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1974,7 +1974,7 @@ s32 IOS_Free(s32 id, void *ptr)
 	return retval;
 }
 
-s32 IOS_RegisterResourceManager(char *path, s32 id)
+static s32 IOS_RegisterResourceManager(char *path, s32 id)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -1989,7 +1989,7 @@ s32 IOS_RegisterResourceManager(char *path, s32 id)
 	return retval;
 }
 
-s32 IOS_Open(const char *filename, u32 mode)
+static s32 IOS_Open(const char *filename, u32 mode)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2006,7 +2006,7 @@ s32 IOS_Open(const char *filename, u32 mode)
 	return retval;
 }
 
-s32 IOS_Close(s32 fd)
+static s32 IOS_Close(s32 fd)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2023,7 +2023,7 @@ s32 IOS_Close(s32 fd)
 
 // SPAM
 #if 0
-s32 IOS_Read(s32 fd, void *buf, u32 count)
+static s32 IOS_Read(s32 fd, void *buf, u32 count)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2039,7 +2039,7 @@ s32 IOS_Read(s32 fd, void *buf, u32 count)
 }
 #endif
 
-s32 IOS_Write(s32 fd, void *buf, u32 count)
+static s32 IOS_Write(s32 fd, void *buf, u32 count)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2054,7 +2054,7 @@ s32 IOS_Write(s32 fd, void *buf, u32 count)
 	return retval;
 }
 
-s32 IOS_Seek(s32 fd, s32 offset, u32 whence)
+static s32 IOS_Seek(s32 fd, s32 offset, u32 whence)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2069,7 +2069,7 @@ s32 IOS_Seek(s32 fd, s32 offset, u32 whence)
 	return retval;
 }
 
-s32 IOS_Ioctl(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen)
+static s32 IOS_Ioctl(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2084,7 +2084,7 @@ s32 IOS_Ioctl(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen)
 	return retval;
 }
 
-s32 IOS_Ioctlv(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec)
+static s32 IOS_Ioctlv(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2099,7 +2099,7 @@ s32 IOS_Ioctlv(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec)
 	return retval;
 }
 
-s32 IOS_OpenAsync(const char *filename, u32 mode, s32 id, ioresreq *reply)
+static s32 IOS_OpenAsync(const char *filename, u32 mode, s32 id, ioresreq *reply)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2114,7 +2114,7 @@ s32 IOS_OpenAsync(const char *filename, u32 mode, s32 id, ioresreq *reply)
 	return retval;
 }
 
-s32 IOS_CloseAsync(s32 fd, s32 id, ioresreq *reply)
+static s32 IOS_CloseAsync(s32 fd, s32 id, ioresreq *reply)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2129,7 +2129,7 @@ s32 IOS_CloseAsync(s32 fd, s32 id, ioresreq *reply)
 	return retval;
 }
 
-s32 IOS_ReadAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
+static s32 IOS_ReadAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2144,7 +2144,7 @@ s32 IOS_ReadAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 	return retval;
 }
 
-s32 IOS_WriteAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
+static s32 IOS_WriteAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2159,7 +2159,7 @@ s32 IOS_WriteAsync(s32 fd, void *buf, u32 count, s32 id, ioresreq *reply)
 	return retval;
 }
 
-s32 IOS_SeekAsync(s32 fd, s32 offset, u32 whence, s32 id, ioresreq *reply)
+static s32 IOS_SeekAsync(s32 fd, s32 offset, u32 whence, s32 id, ioresreq *reply)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2174,7 +2174,7 @@ s32 IOS_SeekAsync(s32 fd, s32 offset, u32 whence, s32 id, ioresreq *reply)
 	return retval;
 }
 
-s32 IOS_IoctlAsync(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen, s32 id, ioresreq *reply)
+static s32 IOS_IoctlAsync(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen, s32 id, ioresreq *reply)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2189,7 +2189,7 @@ s32 IOS_IoctlAsync(s32 fd, s32 cmd, void *in, u32 inlen, void *out, u32 outlen, 
 	return retval;
 }
 
-s32 IOS_IoctlvAsync(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec, s32 id, ioresreq *reply)
+static s32 IOS_IoctlvAsync(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec, s32 id, ioresreq *reply)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2206,7 +2206,7 @@ s32 IOS_IoctlvAsync(s32 fd, s32 cmd, u32 read, u32 written, iovec *vec, s32 id, 
 
 // SPAM
 #if 0
-s32 IOS_ResourceReply(ioresreq *reply, s32 status)
+static s32 IOS_ResourceReply(ioresreq *reply, s32 status)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2222,7 +2222,7 @@ s32 IOS_ResourceReply(ioresreq *reply, s32 status)
 }
 #endif
 
-s32 IOS_SetUid(s32 id, u32 uid)
+static s32 IOS_SetUid(s32 id, u32 uid)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2237,7 +2237,7 @@ s32 IOS_SetUid(s32 id, u32 uid)
 	return retval;
 }
 
-u32 IOS_GetUid(void)
+static u32 IOS_GetUid(void)
 {
 	u32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2252,7 +2252,7 @@ u32 IOS_GetUid(void)
 	return retval;
 }
 
-s32 IOS_SetGid(s32 id, u16 gid)
+static s32 IOS_SetGid(s32 id, u16 gid)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2267,7 +2267,7 @@ s32 IOS_SetGid(s32 id, u16 gid)
 	return retval;
 }
 
-u16 IOS_GetGid(void)
+static u16 IOS_GetGid(void)
 {
 	u16 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2284,7 +2284,7 @@ u16 IOS_GetGid(void)
 
 // SPAM
 #if 0
-void IOS_FlushMem(s32 grp)
+static void IOS_FlushMem(s32 grp)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_flushmem(grp);
@@ -2296,7 +2296,7 @@ void IOS_FlushMem(s32 grp)
 
 // SPAM
 #if 0
-void IOS_InvalidateRdb(s32 buf)
+static void IOS_InvalidateRdb(s32 buf)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_invalrdb(buf);
@@ -2306,7 +2306,7 @@ void IOS_InvalidateRdb(s32 buf)
 }
 #endif
 
-s32 IOS_ClearAndEnableIPCIOPIntr(void)
+static s32 IOS_ClearAndEnableIPCIOPIntr(void)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2321,7 +2321,7 @@ s32 IOS_ClearAndEnableIPCIOPIntr(void)
 	return retval;
 }
 
-s32 IOS_ClearAndEnableDIIntr(void)
+static s32 IOS_ClearAndEnableDIIntr(void)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2336,7 +2336,7 @@ s32 IOS_ClearAndEnableDIIntr(void)
 	return retval;
 }
 
-s32 IOS_ClearAndEnableSDIntr(u8 num)
+static s32 IOS_ClearAndEnableSDIntr(u8 num)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2351,7 +2351,7 @@ s32 IOS_ClearAndEnableSDIntr(u8 num)
 	return retval;
 }
 
-s32 IOS_ClearAndEnableEvent(u32 evt)
+static s32 IOS_ClearAndEnableEvent(u32 evt)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2366,7 +2366,7 @@ s32 IOS_ClearAndEnableEvent(u32 evt)
 	return retval;
 }
 
-s32 IOS_AccessIobPool(iosiobpoolid pool)
+static s32 IOS_AccessIobPool(iosiobpoolid pool)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2381,7 +2381,7 @@ s32 IOS_AccessIobPool(iosiobpoolid pool)
 	return retval;
 }
 
-iosiobuf *IOS_AllocIob(u32 pool, u32 size, u32 dbg)
+static iosiobuf *IOS_AllocIob(u32 pool, u32 size, u32 dbg)
 {
 	iosiobuf *retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2396,7 +2396,7 @@ iosiobuf *IOS_AllocIob(u32 pool, u32 size, u32 dbg)
 	return retval;
 }
 
-s32 IOS_FreeIob(iosiobuf *ptr)
+static s32 IOS_FreeIob(iosiobuf *ptr)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2411,7 +2411,7 @@ s32 IOS_FreeIob(iosiobuf *ptr)
 	return retval;
 }
 
-void IOS_DebugDumpIobFreeHdrsList(void)
+static void IOS_DebugDumpIobFreeHdrsList(void)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_dbgdumpiobfreehdrlist();
@@ -2420,7 +2420,7 @@ void IOS_DebugDumpIobFreeHdrsList(void)
 	printf("%s()\n", __FUNCTION__);
 }
 
-void IOS_DebugDumpIobFreeBufsList(void)
+static void IOS_DebugDumpIobFreeBufsList(void)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_dbgdumpiobfreebuflist();
@@ -2429,7 +2429,7 @@ void IOS_DebugDumpIobFreeBufsList(void)
 	printf("%s()\n", __FUNCTION__);
 }
 
-u8 *IOS_PutIob(iosiobuf *iob, u16 len)
+static u8 *IOS_PutIob(iosiobuf *iob, u16 len)
 {
 	u8 *retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2444,7 +2444,7 @@ u8 *IOS_PutIob(iosiobuf *iob, u16 len)
 	return retval;
 }
 
-u8 *IOS_PushIob(iosiobuf *iob, u16 len)
+static u8 *IOS_PushIob(iosiobuf *iob, u16 len)
 {
 	u8 *retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2459,7 +2459,7 @@ u8 *IOS_PushIob(iosiobuf *iob, u16 len)
 	return retval;
 }
 
-u8 *IOS_PullIob(iosiobuf *iob, u16 len)
+static u8 *IOS_PullIob(iosiobuf *iob, u16 len)
 {
 	u8 *retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2476,7 +2476,7 @@ u8 *IOS_PullIob(iosiobuf *iob, u16 len)
 
 // SPAM
 #if 0
-s32 IOS_IsValidIob(iosiobuf *iob)
+static s32 IOS_IsValidIob(iosiobuf *iob)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2492,7 +2492,7 @@ s32 IOS_IsValidIob(iosiobuf *iob)
 }
 #endif
 
-iosiobuf *IOS_CloneIob(iosiobuf *iob)
+static iosiobuf *IOS_CloneIob(iosiobuf *iob)
 {
 	iosiobuf *retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2509,7 +2509,7 @@ iosiobuf *IOS_CloneIob(iosiobuf *iob)
 
 // SPAM
 #if 0
-void IOS_InvalidateDCache(void *ptr, u32 size)
+static void IOS_InvalidateDCache(void *ptr, u32 size)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_invaldcache(ptr, size);
@@ -2521,7 +2521,7 @@ void IOS_InvalidateDCache(void *ptr, u32 size)
 
 // SPAM
 #if 0
-void IOS_FlushDCache(void *ptr, u32 size)
+static void IOS_FlushDCache(void *ptr, u32 size)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_flushdcache(ptr, size);
@@ -2532,7 +2532,7 @@ void IOS_FlushDCache(void *ptr, u32 size)
 #endif
 
 // it would be nice to figure out how to do patching of the loaded PPC content here
-s32 IOS_LaunchElf(const char *filename)
+static s32 IOS_LaunchElf(const char *filename)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2548,7 +2548,7 @@ s32 IOS_LaunchElf(const char *filename)
 }
 
 // mostly just for logging at this point, but maybe would be better to do patches here?
-s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
+static s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2563,7 +2563,7 @@ s32 IOS_LaunchOS(const char *filename, int r1, u32 filesize)
 	return retval;
 }
 
-void IOS_LaunchOSFromMemory(u32 addr, u32 ver)
+static void IOS_LaunchOSFromMemory(u32 addr, u32 ver)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_launchosfrommem(addr, ver);
@@ -2572,7 +2572,7 @@ void IOS_LaunchOSFromMemory(u32 addr, u32 ver)
 	printf("%s(addr: 0x%08x, version: %d)\n", __FUNCTION__, addr, ver);
 }
 
-s32 IOS_ResetDI(void)
+static s32 IOS_ResetDI(void)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2587,7 +2587,7 @@ s32 IOS_ResetDI(void)
 	return retval;
 }
 
-s32 IOS_ReleaseDIReset(void)
+static s32 IOS_ReleaseDIReset(void)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2602,7 +2602,7 @@ s32 IOS_ReleaseDIReset(void)
 	return retval;
 }
 
-u8 IOS_IsDIReset(void)
+static u8 IOS_IsDIReset(void)
 {
 	u8 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2617,7 +2617,7 @@ u8 IOS_IsDIReset(void)
 	return retval;
 }
 
-void IOS_GetOSVersion(u32 *major, u16 *minor)
+static void IOS_GetOSVersion(u32 *major, u16 *minor)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_getosver(major, minor);
@@ -2626,7 +2626,7 @@ void IOS_GetOSVersion(u32 *major, u16 *minor)
 	printf("%s(major: %p, minor: %p)\n", __FUNCTION__, major, minor);
 }
 
-void IOS_GetBootVersion(u32 *major, u16 *minor)
+static void IOS_GetBootVersion(u32 *major, u16 *minor)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_getbootver(major, minor);
@@ -2635,7 +2635,7 @@ void IOS_GetBootVersion(u32 *major, u16 *minor)
 	printf("%s(major: %p, minor: %p)\n", __FUNCTION__, major, minor);
 }
 
-u32 IOS_GetDDRVendorIds(void)
+static u32 IOS_GetDDRVendorIds(void)
 {
 	u32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2650,7 +2650,7 @@ u32 IOS_GetDDRVendorIds(void)
 	return retval;
 }
 
-u32 IOS_GetHollywoodId(void)
+static u32 IOS_GetHollywoodId(void)
 {
 	u32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2665,7 +2665,7 @@ u32 IOS_GetHollywoodId(void)
 	return retval;
 }
 
-void IOS_GetUsage(u32 usage)
+static void IOS_GetUsage(u32 usage)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_getusage(usage);
@@ -2674,7 +2674,7 @@ void IOS_GetUsage(u32 usage)
 	printf("%s(%d)\n", __FUNCTION__, usage);
 }
 
-s32 IOS_SetLoMemOSVersion(u32 ver)
+static s32 IOS_SetLoMemOSVersion(u32 ver)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2689,7 +2689,7 @@ s32 IOS_SetLoMemOSVersion(u32 ver)
 	return retval;
 }
 
-u32 IOS_GetLoMemOSVersion(u32 ver)
+static u32 IOS_GetLoMemOSVersion(u32 ver)
 {
 	u32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2704,7 +2704,7 @@ u32 IOS_GetLoMemOSVersion(u32 ver)
 	return retval;
 }
 
-s32 IOS_SetDiSpinup(u32 s)
+static s32 IOS_SetDiSpinup(u32 s)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2721,7 +2721,7 @@ s32 IOS_SetDiSpinup(u32 s)
 
 // SPAM
 #if 0
-void *IOS_VirtualToPhysical(void *virt)
+static void *IOS_VirtualToPhysical(void *virt)
 {
 	void *retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2737,7 +2737,7 @@ void *IOS_VirtualToPhysical(void *virt)
 }
 #endif
 
-s32 IOS_SetDVDReadDisable(u8 disable)
+static s32 IOS_SetDVDReadDisable(u8 disable)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2752,7 +2752,7 @@ s32 IOS_SetDVDReadDisable(u8 disable)
 	return retval;
 }
 
-u8 IOS_GetDVDReadDisable(void)
+static u8 IOS_GetDVDReadDisable(void)
 {
 	u8 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2767,7 +2767,7 @@ u8 IOS_GetDVDReadDisable(void)
 	return retval;
 }
 
-s32 IOS_SetEnableAHBPI2DI(u8 enable)
+static s32 IOS_SetEnableAHBPI2DI(u8 enable)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2782,7 +2782,7 @@ s32 IOS_SetEnableAHBPI2DI(u8 enable)
 	return retval;
 }
 
-u8 IOS_GetEnableAHBPI2DI(void)
+static u8 IOS_GetEnableAHBPI2DI(void)
 {
 	u8 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2797,7 +2797,7 @@ u8 IOS_GetEnableAHBPI2DI(void)
 	return retval;
 }
 
-s32 IOS_SetPPCACRPerms(u8 enable)
+static s32 IOS_SetPPCACRPerms(u8 enable)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2812,7 +2812,7 @@ s32 IOS_SetPPCACRPerms(u8 enable)
 	return retval;
 }
 
-u32 IOS_GetCoreClk(void)
+static u32 IOS_GetCoreClk(void)
 {
 	u32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2829,7 +2829,7 @@ u32 IOS_GetCoreClk(void)
 
 // SPAM
 #if 0
-s32 IOS_ACRRegWrite(u32 offset, u32 value)
+static s32 IOS_ACRRegWrite(u32 offset, u32 value)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2847,7 +2847,7 @@ s32 IOS_ACRRegWrite(u32 offset, u32 value)
 
 // SPAM
 #if 0
-s32 IOS_DDRRegWrite(u32 offset, u32 value)
+static s32 IOS_DDRRegWrite(u32 offset, u32 value)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2863,7 +2863,7 @@ s32 IOS_DDRRegWrite(u32 offset, u32 value)
 }
 #endif
 
-void IOS_OutputLed(u8 value)
+static void IOS_OutputLed(u8 value)
 {
 	/*u32 cookie =*/ irq_kill();
 	ios_outputled(value);
@@ -2872,7 +2872,7 @@ void IOS_OutputLed(u8 value)
 	printf("%s(%d)\n", __FUNCTION__, value);
 }
 
-s32 IOS_SetIpcAccessRights(u8 *rights)
+static s32 IOS_SetIpcAccessRights(u8 *rights)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2890,7 +2890,7 @@ s32 IOS_SetIpcAccessRights(u8 *rights)
 // This is called by modular IOS's kernel to load each module from NAND -- could probably
 // do patching here instead of in ios_createthread, but you have to figure out whether or not
 // this is the right module to patch somehow
-s32 IOS_LaunchRM(const char *filename)
+static s32 IOS_LaunchRM(const char *filename)
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
@@ -2906,7 +2906,7 @@ s32 IOS_LaunchRM(const char *filename)
 }
 
 // perform patching of syscall table to install our hooks
-void handle_syscall_table(u32 *syscall_table, u32 size)
+static void handle_syscall_table(u32 *syscall_table, u32 size)
 {
 	//u32 cookie;
 #if 0
@@ -3189,7 +3189,7 @@ void handle_syscall_table(u32 *syscall_table, u32 size)
 }	
 
 #if PPCHAX
-void *find_stuff_EXI_stub(void)
+static void *find_stuff_EXI_stub(void)
 {
 	int i;
 	u32 magic[] = { 0x7C631A78, 0x6463D7B0 };
@@ -3271,7 +3271,7 @@ void *find_stuff_EXI_stub(void)
 
 // ye olde ELF loader, written in C for great justice
 // also patches too
-void *_loadelf(const u8 *elf)
+static void *_loadelf(const u8 *elf)
 {
 	int count;
 	Elf32_Phdr *phdr;

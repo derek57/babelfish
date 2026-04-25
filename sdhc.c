@@ -104,11 +104,80 @@ static inline void bus_space_write_1(bus_space_handle_t ioh, u32 r, u8 v)
 	mask32(addr & ~3, mask, v << shift);
 }
 
+/* Prepare for another command. */
+static int sdhc_soft_reset(struct sdhc_host *hp, int mask)
+{
+	int timo;
+
+	DPRINTF(1, "sdhc: software reset reg=%#x\n", mask);
+
+	HWRITE1(hp, SDHC_SOFTWARE_RESET, mask);
+
+	for (timo = 10; timo > 0; timo--)
+	{
+		if (!ISSET(HREAD1(hp, SDHC_SOFTWARE_RESET), mask))
+			break;
+
+		delay(10000);
+		HWRITE1(hp, SDHC_SOFTWARE_RESET, 0);
+	}
+
+	if (timo == 0)
+	{
+		DPRINTF(1, "sdhc: timeout reg=%#x\n", HREAD1(hp, SDHC_SOFTWARE_RESET));
+		HWRITE1(hp, SDHC_SOFTWARE_RESET, 0);
+		return (ETIMEDOUT);
+	}
+
+	return (0);
+}
+
+/*
+ * Reset the host controller.  Called during initialization, when
+ * cards are removed, upon resume, and during error recovery.
+ */
+int sdhc_host_reset(struct sdhc_host *hp)
+{
+	u_int16_t imask;
+	int error;
+
+	/* Disable all interrupts. */
+	HWRITE2(hp, SDHC_NINTR_SIGNAL_EN, 0);
+
+	/*
+	 * Reset the entire host controller and wait up to 100ms for
+	 * the controller to clear the reset bit.
+	 */
+	if ((error = sdhc_soft_reset(hp, SDHC_RESET_ALL)) != 0)
+	{
+		return (error);
+	}	
+
+	/* Set data timeout counter value to max for now. */
+	HWRITE1(hp, SDHC_TIMEOUT_CTL, SDHC_TIMEOUT_MAX);
+
+	/* Enable interrupts. */
+	imask =
+#ifndef LOADER
+	    SDHC_CARD_REMOVAL | SDHC_CARD_INSERTION |
+#endif
+	    SDHC_BUFFER_READ_READY | SDHC_BUFFER_WRITE_READY |
+	    SDHC_DMA_INTERRUPT | SDHC_BLOCK_GAP_EVENT |
+	    SDHC_TRANSFER_COMPLETE | SDHC_COMMAND_COMPLETE;
+
+	HWRITE2(hp, SDHC_NINTR_STATUS_EN, imask);
+	HWRITE2(hp, SDHC_EINTR_STATUS_EN, SDHC_EINTR_STATUS_MASK);
+	HWRITE2(hp, SDHC_NINTR_SIGNAL_EN, imask);
+	HWRITE2(hp, SDHC_EINTR_SIGNAL_EN, SDHC_EINTR_SIGNAL_MASK);
+
+	return 0;
+}
+
 /*
  * Called by attachment driver.  For each SD card slot there is one SD
  * host controller standard register set. (1.3)
  */
-int sdhc_host_found(bus_space_tag_t iot, bus_space_handle_t ioh, int usedma)
+static int sdhc_host_found(bus_space_tag_t iot, bus_space_handle_t ioh, int usedma)
 {
 	u_int32_t caps;
 	int error = 1;
@@ -191,82 +260,13 @@ err:
 //
 // Shutdown hook established by or called from attachment driver.
 //
-void sdhc_shutdown(void)
+static void sdhc_shutdown(void)
 {
 	// XXX chip locks up if we don't disable it before reboot.
 	(void)sdhc_host_reset(&sc_host);
 }
 #endif
 */
-
-/* Prepare for another command. */
-int sdhc_soft_reset(struct sdhc_host *hp, int mask)
-{
-	int timo;
-
-	DPRINTF(1, "sdhc: software reset reg=%#x\n", mask);
-
-	HWRITE1(hp, SDHC_SOFTWARE_RESET, mask);
-
-	for (timo = 10; timo > 0; timo--)
-	{
-		if (!ISSET(HREAD1(hp, SDHC_SOFTWARE_RESET), mask))
-			break;
-
-		delay(10000);
-		HWRITE1(hp, SDHC_SOFTWARE_RESET, 0);
-	}
-
-	if (timo == 0)
-	{
-		DPRINTF(1, "sdhc: timeout reg=%#x\n", HREAD1(hp, SDHC_SOFTWARE_RESET));
-		HWRITE1(hp, SDHC_SOFTWARE_RESET, 0);
-		return (ETIMEDOUT);
-	}
-
-	return (0);
-}
-
-/*
- * Reset the host controller.  Called during initialization, when
- * cards are removed, upon resume, and during error recovery.
- */
-int sdhc_host_reset(struct sdhc_host *hp)
-{
-	u_int16_t imask;
-	int error;
-
-	/* Disable all interrupts. */
-	HWRITE2(hp, SDHC_NINTR_SIGNAL_EN, 0);
-
-	/*
-	 * Reset the entire host controller and wait up to 100ms for
-	 * the controller to clear the reset bit.
-	 */
-	if ((error = sdhc_soft_reset(hp, SDHC_RESET_ALL)) != 0)
-	{
-		return (error);
-	}	
-
-	/* Set data timeout counter value to max for now. */
-	HWRITE1(hp, SDHC_TIMEOUT_CTL, SDHC_TIMEOUT_MAX);
-
-	/* Enable interrupts. */
-	imask =
-#ifndef LOADER
-	    SDHC_CARD_REMOVAL | SDHC_CARD_INSERTION |
-#endif
-	    SDHC_BUFFER_READ_READY | SDHC_BUFFER_WRITE_READY |
-	    SDHC_DMA_INTERRUPT | SDHC_BLOCK_GAP_EVENT |
-	    SDHC_TRANSFER_COMPLETE | SDHC_COMMAND_COMPLETE;
-
-	HWRITE2(hp, SDHC_NINTR_STATUS_EN, imask);
-	HWRITE2(hp, SDHC_EINTR_STATUS_EN, SDHC_EINTR_STATUS_MASK);
-	HWRITE2(hp, SDHC_NINTR_SIGNAL_EN, imask);
-	HWRITE2(hp, SDHC_EINTR_SIGNAL_EN, SDHC_EINTR_SIGNAL_MASK);
-
-	return 0;
-}
 
 /*
  * Return non-zero if the card is currently inserted.
@@ -389,7 +389,7 @@ int sdhc_bus_clock(struct sdhc_host *hp, int freq)
 }
 
 /*
-void sdhc_card_intr_mask(struct sdhc_host *hp, int enable)
+static void sdhc_card_intr_mask(struct sdhc_host *hp, int enable)
 {
 	if (enable)
 	{
@@ -403,13 +403,13 @@ void sdhc_card_intr_mask(struct sdhc_host *hp, int enable)
 	}
 }
 
-void sdhc_card_intr_ack(struct sdhc_host *hp)
+static void sdhc_card_intr_ack(struct sdhc_host *hp)
 {
 	HSET2(hp, SDHC_NINTR_STATUS_EN, SDHC_CARD_INTERRUPT);
 }
 */
 
-int sdhc_wait_state(struct sdhc_host *hp, u_int32_t mask, u_int32_t value)
+static int sdhc_wait_state(struct sdhc_host *hp, u_int32_t mask, u_int32_t value)
 {
 	u_int32_t state;
 	int timeout;
@@ -427,7 +427,7 @@ int sdhc_wait_state(struct sdhc_host *hp, u_int32_t mask, u_int32_t value)
 }
 
 #if SDHC_DEBUG
-void sdhc_dump_regs(struct sdhc_host *hp)
+static void sdhc_dump_regs(struct sdhc_host *hp)
 {
 	DPRINTF(0, "0x%02x PRESENT_STATE:    %x\n", SDHC_PRESENT_STATE, HREAD4(hp, SDHC_PRESENT_STATE));
 	DPRINTF(0, "0x%02x POWER_CTL:        %x\n", SDHC_POWER_CTL, HREAD1(hp, SDHC_POWER_CTL));
@@ -442,7 +442,88 @@ void sdhc_dump_regs(struct sdhc_host *hp)
 }
 #endif
 
-int sdhc_wait_intr(struct sdhc_host *hp, int mask, int timo)
+//
+// Established by attachment driver at interrupt priority IPL_SDMMC.
+//
+static int sdhc_intr(void)
+{
+	u_int16_t status;
+
+	DPRINTF(1, "shdc_intr():\n");
+//	sdhc_dump_regs(&sc_host);
+		
+	// Find out which interrupts are pending.
+	status = HREAD2(&sc_host, SDHC_NINTR_STATUS);
+
+	if (!ISSET(status, SDHC_NINTR_STATUS_MASK))
+	{
+		DPRINTF(1, "unknown interrupt\n");
+		return 0;
+	}
+
+	// Acknowledge the interrupts we are about to handle.
+	HWRITE2(&sc_host, SDHC_NINTR_STATUS, status);
+	DPRINTF(2, "sdhc: interrupt status=%d\n", status);
+
+	// Service error interrupts.
+	if (ISSET(status, SDHC_ERROR_INTERRUPT))
+	{
+		u_int16_t error;
+		u_int16_t signal;
+
+		// Acknowledge error interrupts.
+		error = HREAD2(&sc_host, SDHC_EINTR_STATUS);
+		signal = HREAD2(&sc_host, SDHC_EINTR_SIGNAL_EN);
+		HWRITE2(&sc_host, SDHC_EINTR_SIGNAL_EN, 0);
+		(void)sdhc_soft_reset(&sc_host, SDHC_RESET_DAT | SDHC_RESET_CMD);
+
+		if (sc_host.data_command == 1)
+		{
+			sc_host.data_command = 0;
+
+			// TODO: add a way to send commands from irq
+			// context and uncomment this
+//			sdmmc_abort();
+		}
+
+		HWRITE2(&sc_host, SDHC_EINTR_STATUS, error);
+		HWRITE2(&sc_host, SDHC_EINTR_SIGNAL_EN, signal);
+
+		DPRINTF(2, "sdhc: error interrupt, status=%d\n", error);
+
+		if (ISSET(error, SDHC_CMD_TIMEOUT_ERROR | SDHC_DATA_TIMEOUT_ERROR))
+		{
+			sc_host.intr_error_status |= error;
+			sc_host.intr_status |= status;
+		}
+	}
+
+	//
+	// Wake up the blocking process to service command
+	// related interrupt(s).
+	//
+	if (ISSET(status, SDHC_BUFFER_READ_READY | SDHC_BUFFER_WRITE_READY | SDHC_COMMAND_COMPLETE |
+	    SDHC_TRANSFER_COMPLETE | SDHC_DMA_INTERRUPT))
+	{
+		sc_host.intr_status |= status;
+	}
+
+	// Service SD card interrupts.
+	if  (ISSET(status, SDHC_CARD_INTERRUPT))
+	{
+		DPRINTF(0, "sdhc: card interrupt\n");
+		HCLR2(&sc_host, SDHC_NINTR_STATUS_EN, SDHC_CARD_INTERRUPT);
+	}
+
+	return 1;
+}
+
+static void sdhc_irq(void)
+{
+	sdhc_intr();
+}
+
+static int sdhc_wait_intr(struct sdhc_host *hp, int mask, int timo)
 {
 	int status;
 
@@ -497,7 +578,7 @@ int sdhc_wait_intr(struct sdhc_host *hp, int mask, int timo)
 	return status;
 }
 
-void sdhc_transfer_data(struct sdhc_host *hp, struct sdmmc_command *cmd)
+static void sdhc_transfer_data(struct sdhc_host *hp, struct sdmmc_command *cmd)
 {
 	int status;
 	int error = 0;
@@ -560,7 +641,7 @@ void sdhc_transfer_data(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	return;
 }
 
-int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
+static int sdhc_start_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 {
 	int error;
 	u_int16_t mode;
@@ -765,94 +846,13 @@ void sdhc_exec_command(struct sdhc_host *hp, struct sdmmc_command *cmd)
 	hp->data_command = 0;
 }
 
-//
-// Established by attachment driver at interrupt priority IPL_SDMMC.
-//
-int sdhc_intr(void)
-{
-	u_int16_t status;
-
-	DPRINTF(1, "shdc_intr():\n");
-//	sdhc_dump_regs(&sc_host);
-		
-	// Find out which interrupts are pending.
-	status = HREAD2(&sc_host, SDHC_NINTR_STATUS);
-
-	if (!ISSET(status, SDHC_NINTR_STATUS_MASK))
-	{
-		DPRINTF(1, "unknown interrupt\n");
-		return 0;
-	}
-
-	// Acknowledge the interrupts we are about to handle.
-	HWRITE2(&sc_host, SDHC_NINTR_STATUS, status);
-	DPRINTF(2, "sdhc: interrupt status=%d\n", status);
-
-	// Service error interrupts.
-	if (ISSET(status, SDHC_ERROR_INTERRUPT))
-	{
-		u_int16_t error;
-		u_int16_t signal;
-
-		// Acknowledge error interrupts.
-		error = HREAD2(&sc_host, SDHC_EINTR_STATUS);
-		signal = HREAD2(&sc_host, SDHC_EINTR_SIGNAL_EN);
-		HWRITE2(&sc_host, SDHC_EINTR_SIGNAL_EN, 0);
-		(void)sdhc_soft_reset(&sc_host, SDHC_RESET_DAT | SDHC_RESET_CMD);
-
-		if (sc_host.data_command == 1)
-		{
-			sc_host.data_command = 0;
-
-			// TODO: add a way to send commands from irq
-			// context and uncomment this
-//			sdmmc_abort();
-		}
-
-		HWRITE2(&sc_host, SDHC_EINTR_STATUS, error);
-		HWRITE2(&sc_host, SDHC_EINTR_SIGNAL_EN, signal);
-
-		DPRINTF(2, "sdhc: error interrupt, status=%d\n", error);
-
-		if (ISSET(error, SDHC_CMD_TIMEOUT_ERROR | SDHC_DATA_TIMEOUT_ERROR))
-		{
-			sc_host.intr_error_status |= error;
-			sc_host.intr_status |= status;
-		}
-	}
-
-	//
-	// Wake up the blocking process to service command
-	// related interrupt(s).
-	//
-	if (ISSET(status, SDHC_BUFFER_READ_READY | SDHC_BUFFER_WRITE_READY | SDHC_COMMAND_COMPLETE |
-	    SDHC_TRANSFER_COMPLETE | SDHC_DMA_INTERRUPT))
-	{
-		sc_host.intr_status |= status;
-	}
-
-	// Service SD card interrupts.
-	if  (ISSET(status, SDHC_CARD_INTERRUPT))
-	{
-		DPRINTF(0, "sdhc: card interrupt\n");
-		HCLR2(&sc_host, SDHC_NINTR_STATUS_EN, SDHC_CARD_INTERRUPT);
-	}
-
-	return 1;
-}
-
-void sdhc_irq(void)
-{
-	sdhc_intr();
-}
-
 void sdhc_init(void)
 {
 	sdhc_host_found(0, SDHC_REG_BASE, 1);
 }
 
 /*
-void sdhc_exit(void)
+static void sdhc_exit(void)
 {
        sdhc_shutdown();
 }

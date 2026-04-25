@@ -59,7 +59,7 @@ static u32 _gecko_checksend(void)
 }
 */
 
-int gecko_isalive(void)
+static int gecko_isalive(void)
 {
 	u32 i = _gecko_command(0x90000000);
 

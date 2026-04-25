@@ -501,8 +501,6 @@ struct sdmmc_function
 };
 
 void sdmmc_attach(sdmmc_chipset_handle_t handle);
-void sdmmc_needs_discover(void);
-int sdmmc_select(void);
 int sdmmc_check_card(void);
 int sdmmc_ack_card(void);
 int sdmmc_read(u32 blk_start, u32 blk_count, void *data);

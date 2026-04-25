@@ -35,24 +35,15 @@ enum AHBDEV
 };
 
 
+void ahb_flush_from(enum AHBDEV dev);
+void _ahb_flush_to(enum AHBDEV dev);
+void _dc_flush_entries(const void *start, int count);
+void _drain_write_buffer(void);
+void _dc_inval_entries(void *start, int count);
+void _dc_flush(void);
+void ahb_flush_to(enum AHBDEV dev);
 void dc_flushrange(const void *start, u32 size);
 void dc_invalidaterange(void *start, u32 size);
-void dc_flushall(void);
-void ic_invalidateall(void);
-void ahb_flush_from(enum AHBDEV dev);
-void ahb_flush_to(enum AHBDEV dev);
-void mem_protect(int enable, void *start, void *end);
-void mem_setswap(int enable);
-void _dc_inval_entries(void *start, int count);
-void _dc_flush_entries(const void *start, int count);
-void _dc_flush(void);
-void _ic_inval(void);
-void _drain_write_buffer(void);
-void mem_initialize(void);
-void mem_shutdown(void);
-u32 dma_addr(void *);
-void _ahb_flush_to(enum AHBDEV dev);
-
 
 static inline u32 get_cr(void)
 {

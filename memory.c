@@ -44,7 +44,7 @@ This code lives at http://gitweb.bootmii.org/?p=babelfish.git
 
 // what is this thing doing anyway?
 // and why only on reads?
-u32 _mc_read32(u32 addr)
+static u32 _mc_read32(u32 addr)
 {
 	u32 data;
 	u32 tmp130 = 0;
@@ -251,7 +251,7 @@ void dc_invalidaterange(void *start, u32 size)
 }
 
 #if 0
-void dc_flushall(void)
+static void dc_flushall(void)
 {
 	/*u32 cookie =*/ irq_kill();
 
@@ -261,7 +261,7 @@ void dc_flushall(void)
 //	irq_restore(cookie);
 }
 
-void ic_invalidateall(void)
+static void ic_invalidateall(void)
 {
 	/*u32 cookie =*/ irq_kill();
 
