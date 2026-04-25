@@ -3024,8 +3024,6 @@ static inline void mem_setswap(void)
 
 static FATFS fatfs;
 
-#define BOOT2V4_ELF_SIZE	0x27674
-
 void *_main(void *base)
 {
 	u8 *elf;
@@ -3035,6 +3033,7 @@ void *_main(void *base)
 	u32 read;
 	ioshdr *hdr = (ioshdr *)base;
 	unsigned int boot2_elf_offset = 0;
+	unsigned int boot2v4_elf_size = 0;
 
 	elf = (u8 *)base;
 	elf += (hdr->hdrsize + hdr->loadersize);
@@ -3096,6 +3095,28 @@ void *_main(void *base)
 
 		dprintf("read ok\n");
 
+		fres = f_lseek(&fd, 0x8);
+
+		if (fres != FR_OK)
+		{
+			dprintf("f_lseek failed\n");
+			//irq_restore(cookie);
+			return NULL;
+		}
+
+		dprintf("seek ok\n");
+
+		fres = f_read(&fd, &boot2v4_elf_size, 4, &read);
+
+		if (fres != FR_OK)
+		{
+			dprintf("f_read failed (read)\n");
+			//irq_restore(cookie);
+			return NULL;
+		}
+
+		dprintf("read ok\n");
+
 		boot2_elf_offset += BOOT2_LOADER_HEADER_SIZE;
 
 		fres = f_lseek(&fd, boot2_elf_offset);
@@ -3118,7 +3139,7 @@ void *_main(void *base)
 		//
 		// Works like a charm...
 		//
-		fres = f_read(&fd, elf, BOOT2V4_ELF_SIZE, &read);
+		fres = f_read(&fd, elf, boot2v4_elf_size, &read);
 
 		if (fres != FR_OK)
 		{
@@ -3129,7 +3150,7 @@ void *_main(void *base)
 
 		dprintf("read ok\n");
 
-		if (read != BOOT2V4_ELF_SIZE)
+		if (read != boot2v4_elf_size)
 		{
 			dprintf("f_read failed (wrong size)\n");
 			//irq_restore(cookie);
