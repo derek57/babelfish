@@ -1567,7 +1567,7 @@ static s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksi
 {
 	s32 retval;
 	/*u32 cookie =*/ irq_kill();
-#if 0
+
 	// gross hack -- on later modular IOSes, we can't patch KD when it's loaded
 	// because only the kernel gets loaded by our ELF loader/patcher -- so instead,
 	// we wait until the module is actually started to do our patch
@@ -1575,7 +1575,7 @@ static s32 IOS_CreateThread(entryproc entry, void *arg, void *stack, u32 stacksi
 	{
 		do_kd_patch((u8 *)0x13db0000, 0x57000);
 	}
-#endif
+
 	retval = ios_createthread(entry, arg, stack, stacksize, prio, attr);
 	//irq_restore(cookie);
 	print_ctx_tag(get_ctx_id(norm_pc(syscall_lr)));
